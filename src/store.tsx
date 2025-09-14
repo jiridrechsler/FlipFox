@@ -186,7 +186,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         },
 
         mark(good) {
-            // show answer, enter 2s hold
+            // show answer, enter 1s hold
             stopRevealTimer();
             stopHoldTimers();
 
@@ -198,7 +198,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
                 return { ...s, showing: true, holding: true, holdPct: 0, seen, correct, accuracy, lastChoice: { poolIndex, good } };
             });
 
-            const HOLD_MS = 2000;
+            const HOLD_MS = 1000;
             const start = Date.now();
             holdTimerRef.current = setInterval(() => {
                 const pct = Math.min(100, ((Date.now() - start) / HOLD_MS) * 100);
