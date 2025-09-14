@@ -11,8 +11,8 @@ export default function ConfigScreen() {
     const router = useRouter();
     const { state, actions } = useGame();
 
-    const categories = useMemo(() => ["all", ...Object.keys(data)], []);
-    const [category, setCategory] = useState<typeof state.category>(state.category);
+    const categories = useMemo(() => Object.keys(data) as (keyof typeof data)[], []);
+    const [category, setCategory] = useState<keyof typeof data>(state.category);
     const [speedSec, setSpeedSec] = useState<number>(state.delaySec);
     const [count, setCount] = useState<number>(state.count || 30);
 
@@ -28,22 +28,21 @@ export default function ConfigScreen() {
                 <Text style={styles.h1}>Flashcards</Text>
                 <Text style={styles.sub}>Pick your practice and go</Text>
 
-                <View style={styles.block}>
+                <View className="block" style={styles.block}>
                     <Text style={styles.label}>Category</Text>
                     <Picker
                         selectedValue={category}
-                        onValueChange={setCategory}
+                        onValueChange={(v) => setCategory(v)}
                         style={styles.picker}
                     >
                         {categories.map((k) => (
                             <Picker.Item
                                 key={k}
-                                label={k === "all" ? "All categories" : k.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                                label={String(k).replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                                 value={k}
                             />
                         ))}
                     </Picker>
-                    <Text style={styles.hint}>“All categories” is great with 30–100 words.</Text>
                 </View>
 
                 <View style={styles.rowWrap}>
@@ -72,7 +71,7 @@ export default function ConfigScreen() {
                                 <Picker.Item key={n} label={`${n}`} value={String(n)} />
                             ))}
                         </Picker>
-                        <Text style={styles.hint}>Independent of category size (repeats if needed).</Text>
+                        <Text style={styles.hint}>If larger than the category, items repeat in shuffled order.</Text>
                     </View>
                 </View>
 
@@ -85,14 +84,8 @@ export default function ConfigScreen() {
 }
 
 function Btn({
-                 title,
-                 onPress,
-                 primary,
-             }: {
-    title: string;
-    onPress: () => void;
-    primary?: boolean;
-}) {
+                 title, onPress, primary,
+             }: { title: string; onPress: () => void; primary?: boolean; }) {
     return (
         <Pressable
             onPress={onPress}
@@ -111,11 +104,8 @@ const styles = StyleSheet.create({
     safe: { flex: 1, backgroundColor: "#0b1025", alignItems: "center" },
     card: {
         backgroundColor: "#111827",
-        margin: 16,
-        padding: 16,
-        borderRadius: 16,
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,.06)",
+        margin: 16, padding: 16, borderRadius: 16,
+        borderWidth: 1, borderColor: "rgba(255,255,255,.06)",
         width: "96%",
     },
     h1: { color: "#e5e7eb", fontSize: 28, fontWeight: "800" },
@@ -129,13 +119,9 @@ const styles = StyleSheet.create({
     buttonsRow: { marginTop: 16, alignItems: "center" },
     btn: {
         backgroundColor: "#0b1226",
-        paddingVertical: 12,
-        paddingHorizontal: 18,
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,.12)",
-        minWidth: 160,
-        alignItems: "center",
+        paddingVertical: 12, paddingHorizontal: 18,
+        borderRadius: 10, borderWidth: 1, borderColor: "rgba(255,255,255,.12)",
+        minWidth: 160, alignItems: "center",
     },
     btnPrimary: { backgroundColor: "#0a1938", borderColor: "rgba(56,189,248,.5)" },
     btnText: { color: "#e5e7eb", fontSize: 16, fontWeight: "600" },

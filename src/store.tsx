@@ -29,17 +29,15 @@ function modesForCat(cat: Category): Mode[] {
     return out;
 }
 
-type PoolItem = { catKey: string; idx: number };
-function buildPool(category: string): PoolItem[] {
+type PoolItem = { catKey: keyof typeof data; idx: number };
+
+function buildPool(category: keyof typeof data): PoolItem[] {
     const items: PoolItem[] = [];
-    const addCat = (key: string) => {
-        const cat = data[key];
-        for (let i = 0; i < cat.en.length; i++) items.push({ catKey: key, idx: i });
-    };
-    if (category === "all") Object.keys(data).forEach(addCat);
-    else addCat(category);
+    const cat = data[category];
+    for (let i = 0; i < cat.en.length; i++) items.push({ catKey: category, idx: i });
     return items;
 }
+
 function buildOrder(count: number, poolLen: number): number[] {
     if (poolLen === 0) return [];
     const base = shuffle(Array.from({ length: poolLen }, (_, i) => i));
@@ -50,18 +48,14 @@ function buildOrder(count: number, poolLen: number): number[] {
 }
 
 // ===== STATE =====
-type Config = { category: "all" | keyof typeof data; delaySec: number; count: number };
+type Config = { category: keyof typeof data; delaySec: number; count: number };
 
 type GameState = Config & {
     pool: PoolItem[]; order: number[]; currentIndex: number;
     seen: number; correct: number; accuracy: number;
-    // card view
     prompt: string; answer: string; showing: boolean;
-    // timers/state
     barPct: number; paused: boolean; finished: boolean;
-    holding: boolean;             // in 2s hold after mark
-    holdPct: number;              // 0-100 progress for the hold
-    // last choice for correction
+    holding: boolean; holdPct: number;
     lastChoice?: { poolIndex: number; good: boolean };
 };
 
@@ -74,9 +68,9 @@ type Ctx = {
         stopTimer(): void;
         togglePause(): void;
         endNow(): void;
-        mark(good: boolean): void;     // show answer + 2s hold, then advance
-        continueNow(): void;           // skip remaining hold and advance
-        changeLastToWrong(): void;     // flip last marked good to wrong
+        mark(good: boolean): void;
+        continueNow(): void;
+        changeLastToWrong(): void;
     };
 };
 
@@ -122,7 +116,7 @@ function buildInitialState(cfg: Config): GameState {
 }
 
 export function GameProvider({ children }: { children: React.ReactNode }) {
-    const [cfg, setCfg] = useState<Config>({ category: "all", delaySec: 2, count: 30 });
+    const [cfg, setCfg] = useState<Config>({ category: "days", delaySec: 2, count: 30 });
     const [state, setState] = useState<GameState>(() => buildInitialState(cfg));
 
     const revealTimerRef = useRef<NodeJS.Timer | null>(null);
@@ -163,15 +157,17 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         startNewRound() { setState(buildInitialState({ ...cfg })); },
 
         startTimer() {
-            stopRevealTimer();
             if (state.delaySec <= 0 || state.paused || state.finished || state.holding) return;
+            stopRevealTimer();
             const total = state.delaySec * 1000;
-            t0.current = Date.now();
+            const start = Date.now();
             revealTimerRef.current = setInterval(() => {
-                const elapsed = Date.now() - t0.current;
+                const elapsed = Date.now() - start;
                 const pct = Math.min(100, (elapsed / total) * 100);
                 setState((s) => ({ ...s, barPct: pct, showing: elapsed >= total ? true : s.showing }));
-                if (elapsed >= total) actions.stopTimer();
+                if (elapsed >= total) {
+                    stopRevealTimer();
+                }
             }, 50);
         },
 
@@ -179,9 +175,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
         togglePause() {
             setState((s) => ({ ...s, paused: !s.paused }));
-            // Stop all timers when entering pause
             stopRevealTimer();
-            if (!state.paused) stopHoldTimers();
+            stopHoldTimers();
         },
 
         endNow() {
@@ -191,8 +186,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         },
 
         mark(good) {
-            // Stop reveal timer, show answer, start a 2s hold with progress
-            actions.stopTimer();
+            // show answer, enter 2s hold
+            stopRevealTimer();
             stopHoldTimers();
 
             setState((s) => {

@@ -26,7 +26,7 @@ export default function EndScreen() {
 
                 <View style={styles.buttonsRow}>
                     <Btn title="Practice again" primary onPress={again} />
-                    <Link href="/" asChild><Btn title="Back to config" onPress={() => {}} /></Link>
+                    <Link href="/" asChild><Btn title="Back to start" onPress={() => {}} /></Link>
                 </View>
             </View>
         </SafeAreaView>
