@@ -11,13 +11,10 @@ export default function ConfigScreen() {
     const router = useRouter();
     const { state, actions } = useGame();
 
-    const categories = useMemo(() => Object.keys(data), []);
-    const [category, setCategory] = useState<keyof typeof data>(state.category);
+    const categories = useMemo(() => ["all", ...Object.keys(data)], []);
+    const [category, setCategory] = useState<typeof state.category>(state.category);
     const [speedSec, setSpeedSec] = useState<number>(state.delaySec);
-    const maxWords = data[category].en.length;
-    const [count, setCount] = useState<number>(
-        Math.min(state.count, maxWords)
-    );
+    const [count, setCount] = useState<number>(state.count || 30);
 
     const start = () => {
         actions.configure({ category, delaySec: speedSec, count });
@@ -35,26 +32,23 @@ export default function ConfigScreen() {
                     <Text style={styles.label}>Category</Text>
                     <Picker
                         selectedValue={category}
-                        onValueChange={(v) => {
-                            setCategory(v);
-                            const max = data[v].en.length;
-                            if (count > max) setCount(max);
-                        }}
+                        onValueChange={setCategory}
                         style={styles.picker}
                     >
                         {categories.map((k) => (
                             <Picker.Item
                                 key={k}
-                                label={k.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                                label={k === "all" ? "All categories" : k.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                                 value={k}
                             />
                         ))}
                     </Picker>
+                    <Text style={styles.hint}>“All categories” is great with 30–100 words.</Text>
                 </View>
 
                 <View style={styles.rowWrap}>
                     <View style={[styles.block, styles.flex1]}>
-                        <Text style={styles.label}>Speed (auto-reveal)</Text>
+                        <Text style={styles.label}>Auto-reveal speed</Text>
                         <Picker
                             selectedValue={String(speedSec)}
                             onValueChange={(v) => setSpeedSec(Number(v))}
@@ -74,11 +68,11 @@ export default function ConfigScreen() {
                             onValueChange={(v) => setCount(Number(v))}
                             style={styles.picker}
                         >
-                            {Array.from({ length: maxWords }, (_, i) => i + 1).map((n) => (
+                            {[10,20,30,40,50,75,100,150,200].map((n) => (
                                 <Picker.Item key={n} label={`${n}`} value={String(n)} />
                             ))}
                         </Picker>
-                        <Text style={styles.hint}>{maxWords} available</Text>
+                        <Text style={styles.hint}>Independent of category size (repeats if needed).</Text>
                     </View>
                 </View>
 

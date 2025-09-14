@@ -5,17 +5,16 @@ import { useGame } from "../src/store";
 import { useWindowDimensions } from "react-native";
 
 export default function GameScreen() {
-    const { width, height } = useWindowDimensions();
+    const { width } = useWindowDimensions();
     const isWide = width >= 700;
     const router = useRouter();
     const { state, actions } = useGame();
 
-    // progress timer
     useEffect(() => {
-        if (state.paused) return;
+        if (state.paused || state.holding) return;
         actions.startTimer();
         return actions.stopTimer;
-    }, [state.currentIndex, state.paused, state.delaySec]);
+    }, [state.currentIndex, state.paused, state.delaySec, state.holding]);
 
     useEffect(() => {
         if (state.finished) router.replace("/end");
@@ -24,10 +23,13 @@ export default function GameScreen() {
     const fontPrompt = Math.max(40, Math.min(80, Math.floor(width / 8)));
     const fontAnswer = Math.max(20, Math.min(40, Math.floor(width / 18)));
 
+    // Which button set to show in the main action area
+    const isHoldPhase = state.holding;
+
     return (
         <SafeAreaView style={styles.safe}>
-            <View style={[styles.card, { maxWidth: isWide ? 900 : undefined }]}>
-                {/* Top bar */}
+            <View style={styles.card}>
+                {/* Top bar (Pause + Config only; hold-phase controls are moved below canvas) */}
                 <View style={styles.topRow}>
                     <Pressable
                         onPress={() => actions.togglePause()}
@@ -43,7 +45,7 @@ export default function GameScreen() {
                     </Link>
                 </View>
 
-                {/* Flash area */}
+                {/* Flash / canvas */}
                 <View style={styles.flash}>
                     <Text style={[styles.prompt, { fontSize: fontPrompt }]} selectable>
                         {state.prompt}
@@ -58,33 +60,47 @@ export default function GameScreen() {
                     </View>
                 </View>
 
-                {/* Big buttons */}
+                {/* Main action area — swaps depending on phase */}
                 <View
                     style={[
-                        styles.bigButtons,
+                        styles.actionArea,
                         { flexDirection: isWide ? "row" : "column" },
                     ]}
                 >
-                    <BigBtn
-                        title="Got it ✓"
-                        onPress={() => actions.mark(true)}
-                        good
-                    />
-                    <BigBtn
-                        title="Missed ✗"
-                        onPress={() => actions.mark(false)}
-                        bad
-                    />
+                    {isHoldPhase ? (
+                        <>
+                            {/* HOLD-PHASE BUTTONS (replace main buttons) */}
+                            {state.lastChoice?.good && (
+                                <BigBtn
+                                    title="Change to wrong"
+                                    onPress={actions.changeLastToWrong}
+                                    bad
+                                />
+                            )}
+                            <BigBtn
+                                title="Continue ▷"
+                                onPress={actions.continueNow}
+                                primary
+                            />
+                        </>
+                    ) : (
+                        <>
+                            {/* NORMAL GAME BUTTONS */}
+                            <BigBtn
+                                title="Got it ✓"
+                                onPress={() => actions.mark(true)}
+                                good
+                            />
+                            <BigBtn
+                                title="Missed ✗"
+                                onPress={() => actions.mark(false)}
+                                bad
+                            />
+                        </>
+                    )}
                 </View>
 
-                {/* Stats row */}
-                <View style={styles.statsRow}>
-                    <Stat label="Seen" value={String(state.seen)} />
-                    <Stat label="Correct" value={String(state.correct)} />
-                    <Stat label="Accuracy" value={`${state.accuracy}%`} />
-                    <Stat label="Card" value={`${state.currentIndex + 1}/${state.order.length}`} />
-                </View>
-
+                {/* Dim overlay when paused (top bar stays clickable) */}
                 {state.paused && (
                     <View style={styles.pausedOverlay}>
                         <Text style={styles.pausedText}>Paused</Text>
@@ -100,11 +116,13 @@ function BigBtn({
                     onPress,
                     good,
                     bad,
+                    primary,
                 }: {
     title: string;
     onPress: () => void;
     good?: boolean;
     bad?: boolean;
+    primary?: boolean;
 }) {
     return (
         <Pressable
@@ -113,21 +131,12 @@ function BigBtn({
                 styles.bigBtn,
                 good && styles.bigBtnGood,
                 bad && styles.bigBtnBad,
+                primary && styles.bigBtnPrimary,
                 pressed && { transform: [{ translateY: 1 }] },
             ]}
         >
             <Text style={styles.bigBtnText}>{title}</Text>
         </Pressable>
-    );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-    return (
-        <View style={styles.pill}>
-            <Text style={styles.pillText}>
-                {label}: <Text style={{ color: "#e5e7eb" }}>{value}</Text>
-            </Text>
-        </View>
     );
 }
 
@@ -141,9 +150,17 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "rgba(255,255,255,.06)",
         width: "96%",
+        maxWidth: 900,
         overflow: "hidden",
     },
-    topRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
+
+    topRow: {
+        position: "relative",
+        zIndex: 20, // above overlay
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: 8,
+    },
     smallBtn: {
         backgroundColor: "#0b1226",
         borderColor: "rgba(255,255,255,.12)",
@@ -177,7 +194,12 @@ const styles = StyleSheet.create({
     },
     bar: { height: "100%", backgroundColor: "#38bdf8" },
 
-    bigButtons: { gap: 12, justifyContent: "center", alignItems: "stretch" },
+    actionArea: {
+        gap: 12,
+        justifyContent: "center",
+        alignItems: "stretch",
+        marginTop: 6,
+    },
     bigBtn: {
         backgroundColor: "#0b1226",
         borderColor: "rgba(255,255,255,.12)",
@@ -189,27 +211,16 @@ const styles = StyleSheet.create({
     },
     bigBtnGood: { borderColor: "rgba(52,211,153,.5)" },
     bigBtnBad: { borderColor: "rgba(248,113,113,.5)" },
+    bigBtnPrimary: { borderColor: "rgba(56,189,248,.5)", backgroundColor: "#0a1938" },
     bigBtnText: { color: "#e5e7eb", fontSize: 20, fontWeight: "700" },
-
-    statsRow: {
-        flexDirection: "row",
-        gap: 8,
-        flexWrap: "wrap",
-        justifyContent: "center",
-        marginTop: 12,
-    },
-    pill: {
-        borderColor: "rgba(255,255,255,.1)",
-        borderWidth: 1,
-        borderRadius: 999,
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-    },
-    pillText: { color: "#94a3b8", fontSize: 12 },
 
     pausedOverlay: {
         position: "absolute",
-        inset: 0,
+        zIndex: 10, // below the topRow
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
         backgroundColor: "rgba(0,0,0,.45)",
         alignItems: "center",
         justifyContent: "center",
