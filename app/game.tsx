@@ -1,14 +1,14 @@
-import React, { useEffect } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Pressable } from "react-native";
-import { useRouter } from "expo-router";
-import { useGame } from "../src/store";
-import { useWindowDimensions } from "react-native";
+import React, {useEffect} from "react";
+import {SafeAreaView, View, Text, StyleSheet, Pressable} from "react-native";
+import {useRouter} from "expo-router";
+import {useGame} from "../src/store";
+import {useWindowDimensions} from "react-native";
 
 export default function GameScreen() {
-    const { width } = useWindowDimensions();
+    const {width} = useWindowDimensions();
     const isWide = width >= 700;
     const router = useRouter();
-    const { state, actions } = useGame();
+    const {state, actions} = useGame();
 
     useEffect(() => {
         if (state.paused || state.holding) return;
@@ -41,7 +41,7 @@ export default function GameScreen() {
                     {isHoldPhase && (
                         <View style={styles.ringWrap} accessibilityLabel="hold timer">
                             <View style={styles.ringOuter}>
-                                <View style={[styles.ringFill, { width: `${state.holdPct}%` }]} />
+                                <View style={[styles.ringFill, {width: `${state.holdPct}%`}]}/>
                                 <Text style={styles.ringText}>
                                     {Math.max(0, 100 - Math.round(state.holdPct))}%
                                 </Text>
@@ -52,30 +52,30 @@ export default function GameScreen() {
 
                 {/* Flash / canvas */}
                 <View style={styles.flash}>
-                    <Text style={[styles.prompt, { fontSize: fontPrompt }]} selectable>
+                    <Text style={[styles.prompt, {fontSize: fontPrompt}]} selectable>
                         {state.prompt}
                     </Text>
                     {state.showing && (
-                        <Text style={[styles.answer, { fontSize: fontAnswer }]} selectable>
+                        <Text style={[styles.answer, {fontSize: fontAnswer}]} selectable>
                             {state.answer}
                         </Text>
                     )}
-                    <View style={styles.progress}><View style={[styles.bar, { width: `${state.barPct}%` }]} /></View>
+                    <View style={styles.progress}><View style={[styles.bar, {width: `${state.barPct}%`}]}/></View>
                 </View>
 
                 {/* Action area (swaps) */}
-                <View style={[styles.actionArea, { flexDirection: isWide ? "row" : "column" }]}>
+                <View style={[styles.actionArea, {flexDirection: isWide ? "row" : "column"}]}>
                     {isHoldPhase ? (
                         <>
                             {state.lastChoice?.good && (
-                                <BigBtn title="Change to wrong" onPress={actions.changeLastToWrong} bad />
+                                <BigBtn title="Change to wrong" onPress={actions.changeLastToWrong} bad/>
                             )}
-                            <BigBtn title="Continue ▷" onPress={actions.continueNow} primary />
+                            <BigBtn title="Continue ▷" onPress={actions.continueNow} primary/>
                         </>
                     ) : (
                         <>
-                            <BigBtn title="Got it ✓" onPress={() => actions.mark(true)} good />
-                            <BigBtn title="Missed ✗" onPress={() => actions.mark(false)} bad />
+                            <BigBtn title="Got it ✓" onPress={() => actions.mark(true)} good/>
+                            <BigBtn title="Missed ✗" onPress={() => actions.mark(false)} bad/>
                         </>
                     )}
                 </View>
@@ -86,7 +86,8 @@ export default function GameScreen() {
                         <View style={styles.pausedPanel} pointerEvents="auto">
                             <Text style={styles.pausedText}>Paused</Text>
                             <View style={styles.pauseButtons}>
-                                <Pressable onPress={() => actions.togglePause()} style={[styles.bigBtn, styles.bigBtnPrimary]}>
+                                <Pressable onPress={() => actions.togglePause()}
+                                           style={[styles.bigBtn, styles.bigBtnPrimary]}>
                                     <Text style={styles.bigBtnText}>Resume</Text>
                                 </Pressable>
                                 <Pressable onPress={actions.endNow} style={[styles.bigBtn, styles.bigBtnBad]}>
@@ -117,12 +118,12 @@ function BigBtn({
     return (
         <Pressable
             onPress={onPress}
-            style={({ pressed }) => [
+            style={({pressed}) => [
                 styles.bigBtn,
                 good && styles.bigBtnGood,
                 bad && styles.bigBtnBad,
                 primary && styles.bigBtnPrimary,
-                pressed && { transform: [{ translateY: 1 }] },
+                pressed && {transform: [{translateY: 1}]},
             ]}
         >
             <Text style={styles.bigBtnText}>{title}</Text>
@@ -131,7 +132,7 @@ function BigBtn({
 }
 
 const styles = StyleSheet.create({
-    safe: { flex: 1, backgroundColor: "#0b1025", alignItems: "center" },
+    safe: {flex: 1, backgroundColor: "#0b1025", alignItems: "center"},
     card: {
         backgroundColor: "#111827",
         margin: 16, padding: 16, borderRadius: 16,
@@ -148,11 +149,11 @@ const styles = StyleSheet.create({
         borderColor: "rgba(255,255,255,.12)", borderWidth: 1,
         borderRadius: 999, paddingHorizontal: 14, paddingVertical: 8,
     },
-    smallBtnActive: { backgroundColor: "#102650", borderColor: "rgba(56,189,248,.5)" },
-    smallBtnText: { color: "#e5e7eb", fontWeight: "600" },
+    smallBtnActive: {backgroundColor: "#102650", borderColor: "rgba(56,189,248,.5)"},
+    smallBtnText: {color: "#e5e7eb", fontWeight: "600"},
 
     // Simple circular badge (no external deps). For a true radial sweep, we can add react-native-svg later.
-    ringWrap: { width: 36, height: 36, alignItems: "center", justifyContent: "center" },
+    ringWrap: {width: 36, height: 36, alignItems: "center", justifyContent: "center"},
     ringOuter: {
         width: 36, height: 36, borderRadius: 18,
         borderWidth: 2, borderColor: "rgba(56,189,248,.5)",
@@ -162,32 +163,32 @@ const styles = StyleSheet.create({
         position: "absolute", left: 0, top: 0, bottom: 0,
         backgroundColor: "rgba(56,189,248,.35)",
     },
-    ringText: { color: "#e5e7eb", fontSize: 10, fontWeight: "700" },
+    ringText: {color: "#e5e7eb", fontSize: 10, fontWeight: "700"},
 
     flash: {
         alignItems: "center", padding: 16,
         borderWidth: 1, borderColor: "rgba(255,255,255,.12)",
         borderRadius: 12, marginBottom: 12, minHeight: 180,
     },
-    prompt: { color: "#e5e7eb", fontWeight: "800", textAlign: "center" },
-    answer: { color: "#e5e7eb", marginTop: 8, opacity: 0.95, textAlign: "center" },
+    prompt: {color: "#e5e7eb", fontWeight: "800", textAlign: "center"},
+    answer: {color: "#e5e7eb", marginTop: 8, opacity: 0.95, textAlign: "center"},
 
     progress: {
         height: 6, width: "100%", backgroundColor: "rgba(255,255,255,.06)",
         marginTop: 12, borderRadius: 999, overflow: "hidden",
     },
-    bar: { height: "100%", backgroundColor: "#38bdf8" },
+    bar: {height: "100%", backgroundColor: "#38bdf8"},
 
-    actionArea: { gap: 12, justifyContent: "center", alignItems: "stretch", marginTop: 6 },
+    actionArea: {gap: 12, justifyContent: "center", alignItems: "stretch", marginTop: 6},
 
     bigBtn: {
         backgroundColor: "#0b1226", borderColor: "rgba(255,255,255,.12)", borderWidth: 1,
         borderRadius: 14, paddingVertical: 18, paddingHorizontal: 20, alignItems: "center",
     },
-    bigBtnGood: { borderColor: "rgba(52,211,153,.5)" },
-    bigBtnBad:  { borderColor: "rgba(248,113,113,.5)" },
-    bigBtnPrimary: { borderColor: "rgba(56,189,248,.5)", backgroundColor: "#0a1938" },
-    bigBtnText: { color: "#e5e7eb", fontSize: 20, fontWeight: "700" },
+    bigBtnGood: {borderColor: "rgba(52,211,153,.5)"},
+    bigBtnBad: {borderColor: "rgba(248,113,113,.5)"},
+    bigBtnPrimary: {borderColor: "rgba(56,189,248,.5)", backgroundColor: "#0a1938"},
+    bigBtnText: {color: "#e5e7eb", fontSize: 20, fontWeight: "700"},
 
     // Pause overlay with centered controls; only panel is interactive
     pausedOverlay: {
@@ -198,6 +199,6 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(17,24,39,.95)", padding: 16, borderRadius: 14,
         borderWidth: 1, borderColor: "rgba(255,255,255,.12)", alignItems: "center", gap: 12, minWidth: 240,
     },
-    pausedText: { color: "#e5e7eb", fontSize: 28, fontWeight: "800" },
-    pauseButtons: { flexDirection: "row", gap: 10, marginTop: 4 },
+    pausedText: {color: "#e5e7eb", fontSize: 28, fontWeight: "800"},
+    pauseButtons: {flexDirection: "row", gap: 10, marginTop: 4},
 });

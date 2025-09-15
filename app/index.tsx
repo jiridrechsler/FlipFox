@@ -1,15 +1,15 @@
-import React, { useMemo, useState } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Pressable, TextInput } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import { useRouter } from "expo-router";
-import { useGame, data } from "../src/store";
-import { useWindowDimensions } from "react-native";
+import React, {useMemo, useState} from "react";
+import {SafeAreaView, View, Text, StyleSheet, Pressable, TextInput} from "react-native";
+import {Picker} from "@react-native-picker/picker";
+import {useRouter} from "expo-router";
+import {useGame, data} from "../src/store";
+import {useWindowDimensions} from "react-native";
 
 export default function ConfigScreen() {
-    const { width } = useWindowDimensions();
+    const {width} = useWindowDimensions();
     const isWide = width >= 700;
     const router = useRouter();
-    const { state, actions } = useGame();
+    const {state, actions} = useGame();
 
     const categories = useMemo(() => Object.keys(data) as (keyof typeof data)[], []);
     const [category, setCategory] = useState<keyof typeof data>(state.category);
@@ -25,26 +25,32 @@ export default function ConfigScreen() {
     const canStart = countValid && speedValid;
 
     const onCountBlur = () => {
-        if (!Number.isFinite(count)) { setCountStr("30"); return; }
+        if (!Number.isFinite(count)) {
+            setCountStr("30");
+            return;
+        }
         const c = Math.min(500, Math.max(1, Math.round(count)));
         setCountStr(String(c));
     };
     const onSpeedBlur = () => {
-        if (!Number.isFinite(speed)) { setSpeedStr("2"); return; }
+        if (!Number.isFinite(speed)) {
+            setSpeedStr("2");
+            return;
+        }
         const s = Math.min(10, Math.max(0, Math.round(speed * 10) / 10));
         setSpeedStr(String(s));
     };
 
     const start = () => {
         if (!canStart) return;
-        actions.configure({ category, delaySec: Number(speedStr), count: Number(countStr) });
+        actions.configure({category, delaySec: Number(speedStr), count: Number(countStr)});
         actions.startNewRound();
         router.push("/game");
     };
 
     return (
         <SafeAreaView style={styles.safe}>
-            <View style={[styles.card, { maxWidth: isWide ? 900 : undefined }]}>
+            <View style={[styles.card, {maxWidth: isWide ? 900 : undefined}]}>
                 <Text style={styles.h1}>Flashcards</Text>
                 <Text style={styles.sub}>Pick your practice and go</Text>
 
@@ -111,7 +117,7 @@ export default function ConfigScreen() {
                 </View>
 
                 <View style={styles.buttonsRow}>
-                    <Btn title="Start" primary onPress={start} disabled={!canStart} />
+                    <Btn title="Start" primary onPress={start} disabled={!canStart}/>
                 </View>
             </View>
         </SafeAreaView>
@@ -125,36 +131,36 @@ function Btn({
         <Pressable
             disabled={disabled}
             onPress={onPress}
-            style={({ pressed }) => [
+            style={({pressed}) => [
                 styles.btn,
                 primary && styles.btnPrimary,
                 disabled && styles.btnDisabled,
-                pressed && !disabled && { transform: [{ translateY: 1 }] },
+                pressed && !disabled && {transform: [{translateY: 1}]},
             ]}
         >
-            <Text style={[styles.btnText, disabled && { opacity: 0.7 }]}>{title}</Text>
+            <Text style={[styles.btnText, disabled && {opacity: 0.7}]}>{title}</Text>
         </Pressable>
     );
 }
 
 const styles = StyleSheet.create({
-    safe: { flex: 1, backgroundColor: "#0b1025", alignItems: "center" },
+    safe: {flex: 1, backgroundColor: "#0b1025", alignItems: "center"},
     card: {
         backgroundColor: "#111827",
         margin: 16, padding: 16, borderRadius: 16,
         borderWidth: 1, borderColor: "rgba(255,255,255,.06)",
         width: "96%",
     },
-    h1: { color: "#e5e7eb", fontSize: 28, fontWeight: "800" },
-    sub: { color: "#94a3b8", marginTop: 4, marginBottom: 10 },
+    h1: {color: "#e5e7eb", fontSize: 28, fontWeight: "800"},
+    sub: {color: "#94a3b8", marginTop: 4, marginBottom: 10},
 
-    label: { color: "#cbd5e1", marginBottom: 6, fontWeight: "600" },
-    hint: { color: "#64748b", fontSize: 12, marginTop: 6, lineHeight: 18 },
-    error: { color: "#f87171", fontSize: 12, marginTop: 6 },
+    label: {color: "#cbd5e1", marginBottom: 6, fontWeight: "600"},
+    hint: {color: "#64748b", fontSize: 12, marginTop: 6, lineHeight: 18},
+    error: {color: "#f87171", fontSize: 12, marginTop: 6},
 
-    block: { marginVertical: 8 },
-    rowWrap: { flexDirection: "row", gap: 12, flexWrap: "wrap" },
-    flex1: { flex: 1, minWidth: 220 },
+    block: {marginVertical: 8},
+    rowWrap: {flexDirection: "row", gap: 12, flexWrap: "wrap"},
+    flex1: {flex: 1, minWidth: 220},
 
     input: {
         backgroundColor: "#0b1226",
@@ -166,18 +172,18 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         fontSize: 16,
     },
-    inputError: { borderColor: "rgba(248,113,113,.65)" },
+    inputError: {borderColor: "rgba(248,113,113,.65)"},
 
-    buttonsRow: { marginTop: 16, alignItems: "center" },
+    buttonsRow: {marginTop: 16, alignItems: "center"},
     btn: {
         backgroundColor: "#0b1226",
         paddingVertical: 12, paddingHorizontal: 18,
         borderRadius: 10, borderWidth: 1, borderColor: "rgba(255,255,255,.12)",
         minWidth: 160, alignItems: "center",
     },
-    btnPrimary: { backgroundColor: "#0a1938", borderColor: "rgba(56,189,248,.5)" },
-    btnDisabled: { opacity: 0.6 },
-    btnText: { color: "#e5e7eb", fontSize: 16, fontWeight: "600" },
+    btnPrimary: {backgroundColor: "#0a1938", borderColor: "rgba(56,189,248,.5)"},
+    btnDisabled: {opacity: 0.6},
+    btnText: {color: "#e5e7eb", fontSize: 16, fontWeight: "600"},
 
-    picker: { backgroundColor: "#0b1226", color: "#e5e7eb", borderRadius: 10 },
+    picker: {backgroundColor: "#0b1226", color: "#e5e7eb", borderRadius: 10},
 });
