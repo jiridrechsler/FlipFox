@@ -87,7 +87,7 @@ export default function GameScreen() {
                                 onPress={actions.changeLastToWrong}
                                 style={[styles.actionBtn, styles.changeBtn]}
                             >
-                                <Text style={styles.actionBtnText}>�� Change to Wrong</Text>
+                                <Text style={[styles.actionBtnText, styles.changeBtnText]}>❌ Change to Wrong</Text>
                             </Pressable>
                         )}
                         <Pressable
@@ -100,16 +100,16 @@ export default function GameScreen() {
                 ) : (
                     <View style={styles.markActions}>
                         <Pressable
-                            onPress={() => actions.mark(true)}
-                            style={[styles.actionBtn, styles.correctBtn]}
-                        >
-                            <Text style={styles.actionBtnText}>✅ Correct</Text>
-                        </Pressable>
-                        <Pressable
                             onPress={() => actions.mark(false)}
                             style={[styles.actionBtn, styles.wrongBtn]}
                         >
                             <Text style={styles.actionBtnText}>❌ Wrong</Text>
+                        </Pressable>
+                        <Pressable
+                            onPress={() => actions.mark(true)}
+                            style={[styles.actionBtn, styles.correctBtn]}
+                        >
+                            <Text style={styles.actionBtnText}>✅ Correct</Text>
                         </Pressable>
                     </View>
                 )}
@@ -290,8 +290,9 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
     },
     holdActions: {
-        gap: 12,
-        alignItems: "center",
+        flexDirection: "row",
+        gap: 15,
+        justifyContent: "center",
     },
     markActions: {
         flexDirection: "row",
@@ -318,6 +319,7 @@ const styles = StyleSheet.create({
     changeBtn: {
         backgroundColor: "#1e1e3f",
         borderColor: "#f87171",
+        color: "#f87171",
     },
     continueBtn: {
         backgroundColor: "#64ffda",
@@ -327,6 +329,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "700",
         color: "#0f0f23",
+    },
+    changeBtnText: {
+        color: "#f87171",
     },
     scoreArea: {
         flexDirection: "row",
