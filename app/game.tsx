@@ -144,13 +144,13 @@ export default function GameScreen() {
                                 onPress={() => actions.togglePause()}
                                 style={[styles.pauseActionBtn, styles.resumeBtn]}
                             >
-                                <Text style={styles.pauseActionText}>▶️ Resume</Text>
+                                <Text style={styles.pauseActionText}>Resume</Text>
                             </Pressable>
                             <Pressable
                                 onPress={actions.endGame}
                                 style={[styles.pauseActionBtn, styles.endBtn]}
                             >
-                                <Text style={styles.pauseActionText}>🏁 End Game</Text>
+                                <Text style={[styles.pauseActionText, styles.endActionText]}>End Game</Text>
                             </Pressable>
                         </View>
                     </View>
@@ -421,5 +421,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "700",
         color: "#0f0f23",
+    },
+    endActionText: {
+        color: "#f87171",
     },
 });
