@@ -95,70 +95,26 @@ export default function EndScreen() {
                 {/* Detailed Stats */}
                 <View style={styles.detailedStats}>
                     <View style={styles.statCard}>
-                        <Text style={styles.statEmoji}>👀</Text>
                         <Text style={styles.statValue}>{state.seen}</Text>
                         <Text style={styles.statLabel}>Words Seen</Text>
                     </View>
                     <View style={styles.statCard}>
-                        <Text style={styles.statEmoji}>✅</Text>
                         <Text style={styles.statValue}>{state.correct}</Text>
                         <Text style={styles.statLabel}>Correct</Text>
                     </View>
                     <View style={styles.statCard}>
-                        <Text style={styles.statEmoji}>❌</Text>
                         <Text style={styles.statValue}>{state.seen - state.correct}</Text>
                         <Text style={styles.statLabel}>Missed</Text>
-                    </View>
-                </View>
-
-                {/* Progress Visualization */}
-                <View style={styles.progressSection}>
-                    <Text style={styles.progressTitle}>Your Progress</Text>
-                    <View style={styles.progressBarContainer}>
-                        <View style={[styles.progressBarFill, {
-                            width: `${state.accuracy}%`,
-                            backgroundColor: performance.color
-                        }]} />
-                    </View>
-                    <Text style={styles.progressText}>
-                        {state.correct} out of {state.seen} correct
-                    </Text>
-                </View>
-
-                {/* Game Info */}
-                <View style={styles.gameInfo}>
-                    <Text style={styles.gameInfoTitle}>Game Details</Text>
-                    <View style={styles.gameInfoGrid}>
-                        <View style={styles.gameInfoItem}>
-                            <Text style={styles.gameInfoLabel}>Category</Text>
-                            <Text style={styles.gameInfoValue}>
-                                {state.settings.category.charAt(0).toUpperCase() + state.settings.category.slice(1)}
-                            </Text>
-                        </View>
-                        <View style={styles.gameInfoItem}>
-                            <Text style={styles.gameInfoLabel}>Mode</Text>
-                            <Text style={styles.gameInfoValue}>
-                                {state.settings.mode.replace(/-/g, ' → ').replace(/\b\w/g, l => l.toUpperCase())}
-                            </Text>
-                        </View>
-                        <View style={styles.gameInfoItem}>
-                            <Text style={styles.gameInfoLabel}>Delay</Text>
-                            <Text style={styles.gameInfoValue}>{state.settings.delaySec}s</Text>
-                        </View>
-                        <View style={styles.gameInfoItem}>
-                            <Text style={styles.gameInfoLabel}>Total Words</Text>
-                            <Text style={styles.gameInfoValue}>{state.settings.count}</Text>
-                        </View>
                     </View>
                 </View>
 
                 {/* Action Buttons */}
                 <View style={styles.actionButtons}>
                     <Pressable onPress={playAgain} style={[styles.actionBtn, styles.playAgainBtn]}>
-                        <Text style={[styles.actionBtnText, styles.playAgainBtnText]}>🔄 Play Again</Text>
+                        <Text style={[styles.actionBtnText, styles.playAgainBtnText]}>Play Again</Text>
                     </Pressable>
                     <Pressable onPress={goHome} style={[styles.actionBtn, styles.homeBtn]}>
-                        <Text style={[styles.actionBtnText, styles.homeBtnText]}>🏠 Home</Text>
+                        <Text style={[styles.actionBtnText, styles.homeBtnText]}>Home</Text>
                     </Pressable>
                 </View>
 
