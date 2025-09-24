@@ -1,204 +1,420 @@
 import React, {useEffect} from "react";
-import {SafeAreaView, View, Text, StyleSheet, Pressable} from "react-native";
+import {SafeAreaView, View, Text, StyleSheet, Pressable, Dimensions} from "react-native";
 import {useRouter} from "expo-router";
 import {useGame} from "../src/store";
-import {useWindowDimensions} from "react-native";
 
 export default function GameScreen() {
-    const {width} = useWindowDimensions();
-    const isWide = width >= 700;
     const router = useRouter();
     const {state, actions} = useGame();
+    const {width, height} = Dimensions.get('window');
 
     useEffect(() => {
         if (state.paused || state.holding) return;
         actions.startTimer();
         return actions.stopTimer;
-    }, [state.currentIndex, state.paused, state.delaySec, state.holding]);
+    }, [state.currentIndex, state.paused, state.settings.delaySec, state.holding]);
 
     useEffect(() => {
-        if (state.finished) router.replace("/end");
-    }, [state.finished]);
+        if (state.finished && state.showingResults) {
+            router.replace("/end");
+        }
+    }, [state.finished, state.showingResults]);
 
-    const fontPrompt = Math.max(40, Math.min(80, Math.floor(width / 8)));
-    const fontAnswer = Math.max(20, Math.min(40, Math.floor(width / 18)));
-
+    const progress = ((state.currentIndex + 1) / state.order.length) * 100;
     const isHoldPhase = state.holding;
 
     return (
-        <SafeAreaView style={styles.safe}>
-            <View style={styles.card}>
-                {/* Top bar (Pause left; radial timer badge right during hold) */}
-                <View style={styles.topRow}>
-                    <Pressable
-                        onPress={() => actions.togglePause()}
-                        style={[styles.smallBtn, state.paused && styles.smallBtnActive]}
-                    >
-                        <Text style={styles.smallBtnText}>{state.paused ? "Resume" : "Pause"}</Text>
-                    </Pressable>
-
-                    {/* Circular hold indicator (top-right) */}
-                    {isHoldPhase && (
-                        <View style={styles.ringWrap} accessibilityLabel="hold timer">
-                            <View style={styles.ringOuter}>
-                                <View style={[styles.ringFill, {width: `${state.holdPct}%`}]}/>
-                                <Text style={styles.ringText}>
-                                    {Math.max(0, 100 - Math.round(state.holdPct))}%
-                                </Text>
-                            </View>
-                        </View>
-                    )}
+        <SafeAreaView style={styles.container}>
+            {/* Header */}
+            <View style={styles.header}>
+                <View style={styles.progressContainer}>
+                    <Text style={styles.progressText}>
+                        {state.currentIndex + 1} / {state.order.length}
+                    </Text>
+                    <View style={styles.progressBar}>
+                        <View style={[styles.progressFill, {width: `${progress}%`}]} />
+                    </View>
                 </View>
+                
+                <Pressable
+                    onPress={() => actions.togglePause()}
+                    style={[styles.pauseBtn, state.paused && styles.pauseBtnActive]}
+                >
+                    <Text style={styles.pauseBtnText}>
+                        {state.paused ? "▶️" : "⏸️"}
+                    </Text>
+                </Pressable>
+            </View>
 
-                {/* Flash / canvas */}
-                <View style={styles.flash}>
-                    <Text style={[styles.prompt, {fontSize: fontPrompt}]} selectable>
+            {/* Main Game Area */}
+            <View style={styles.gameArea}>
+                <View style={styles.card}>
+                    <Text style={[styles.prompt, {fontSize: Math.min(width * 0.15, 80)}]}>
                         {state.prompt}
                     </Text>
+                    
                     {state.showing && (
-                        <Text style={[styles.answer, {fontSize: fontAnswer}]} selectable>
+                        <Text style={[styles.answer, {fontSize: Math.min(width * 0.08, 40)}]}>
                             {state.answer}
                         </Text>
                     )}
-                    <View style={styles.progress}><View style={[styles.bar, {width: `${state.barPct}%`}]}/></View>
+
+                    {/* Timer Bar */}
+                    <View style={styles.timerContainer}>
+                        <View style={[styles.timerBar, {width: `${state.barPct}%`}]} />
+                    </View>
                 </View>
 
-                {/* Action area (swaps) */}
-                <View style={[styles.actionArea, {flexDirection: isWide ? "row" : "column"}]}>
-                    {isHoldPhase ? (
-                        <>
-                            {state.lastChoice?.good && (
-                                <BigBtn title="Change to wrong" onPress={actions.changeLastToWrong} bad/>
-                            )}
-                            <BigBtn title="Continue ▷" onPress={actions.continueNow} primary/>
-                        </>
-                    ) : (
-                        <>
-                            <BigBtn title="Got it ✓" onPress={() => actions.mark(true)} good/>
-                            <BigBtn title="Missed ✗" onPress={() => actions.mark(false)} bad/>
-                        </>
-                    )}
-                </View>
-
-                {/* PAUSE OVERLAY — centered Resume + End */}
-                {state.paused && (
-                    <View style={styles.pausedOverlay} pointerEvents="box-none">
-                        <View style={styles.pausedPanel} pointerEvents="auto">
-                            <Text style={styles.pausedText}>Paused</Text>
-                            <View style={styles.pauseButtons}>
-                                <Pressable onPress={() => actions.togglePause()}
-                                           style={[styles.bigBtn, styles.bigBtnPrimary]}>
-                                    <Text style={styles.bigBtnText}>Resume</Text>
-                                </Pressable>
-                                <Pressable onPress={actions.endNow} style={[styles.bigBtn, styles.bigBtnBad]}>
-                                    <Text style={styles.bigBtnText}>End</Text>
-                                </Pressable>
-                            </View>
+                {/* Hold Phase Indicator */}
+                {isHoldPhase && (
+                    <View style={styles.holdIndicator}>
+                        <View style={styles.holdProgress}>
+                            <View style={[styles.holdFill, {width: `${state.holdPct}%`}]} />
                         </View>
+                        <Text style={styles.holdText}>
+                            {state.lastChoice?.good ? "✅ Correct!" : "❌ Incorrect"}
+                        </Text>
                     </View>
                 )}
             </View>
+
+            {/* Action Buttons */}
+            <View style={styles.actionArea}>
+                {isHoldPhase ? (
+                    <View style={styles.holdActions}>
+                        {state.lastChoice?.good && (
+                            <Pressable
+                                onPress={actions.changeLastToWrong}
+                                style={[styles.actionBtn, styles.changeBtn]}
+                            >
+                                <Text style={styles.actionBtnText}>�� Change to Wrong</Text>
+                            </Pressable>
+                        )}
+                        <Pressable
+                            onPress={actions.continueNow}
+                            style={[styles.actionBtn, styles.continueBtn]}
+                        >
+                            <Text style={styles.actionBtnText}>➡️ Continue</Text>
+                        </Pressable>
+                    </View>
+                ) : (
+                    <View style={styles.markActions}>
+                        <Pressable
+                            onPress={() => actions.mark(true)}
+                            style={[styles.actionBtn, styles.correctBtn]}
+                        >
+                            <Text style={styles.actionBtnText}>✅ Correct</Text>
+                        </Pressable>
+                        <Pressable
+                            onPress={() => actions.mark(false)}
+                            style={[styles.actionBtn, styles.wrongBtn]}
+                        >
+                            <Text style={styles.actionBtnText}>❌ Wrong</Text>
+                        </Pressable>
+                    </View>
+                )}
+            </View>
+
+            {/* Score Display */}
+            <View style={styles.scoreArea}>
+                <View style={styles.scoreItem}>
+                    <Text style={styles.scoreValue}>{state.correct}</Text>
+                    <Text style={styles.scoreLabel}>Correct</Text>
+                </View>
+                <View style={styles.scoreItem}>
+                    <Text style={styles.scoreValue}>{state.accuracy}%</Text>
+                    <Text style={styles.scoreLabel}>Accuracy</Text>
+                </View>
+                <View style={styles.scoreItem}>
+                    <Text style={styles.scoreValue}>{state.seen}</Text>
+                    <Text style={styles.scoreLabel}>Seen</Text>
+                </View>
+            </View>
+
+            {/* Pause Overlay */}
+            {state.paused && (
+                <View style={styles.pauseOverlay}>
+                    <View style={styles.pausePanel}>
+                        <Text style={styles.pauseEmoji}>⏸️</Text>
+                        <Text style={styles.pauseTitle}>Game Paused</Text>
+                        <Text style={styles.pauseSubtitle}>Take your time</Text>
+                        
+                        <View style={styles.pauseActions}>
+                            <Pressable
+                                onPress={() => actions.togglePause()}
+                                style={[styles.pauseActionBtn, styles.resumeBtn]}
+                            >
+                                <Text style={styles.pauseActionText}>▶️ Resume</Text>
+                            </Pressable>
+                            <Pressable
+                                onPress={actions.endGame}
+                                style={[styles.pauseActionBtn, styles.endBtn]}
+                            >
+                                <Text style={styles.pauseActionText}>🏁 End Game</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </View>
+            )}
         </SafeAreaView>
     );
 }
 
-function BigBtn({
-                    title,
-                    onPress,
-                    good,
-                    bad,
-                    primary,
-                }: {
-    title: string;
-    onPress: () => void;
-    good?: boolean;
-    bad?: boolean;
-    primary?: boolean;
-}) {
-    return (
-        <Pressable
-            onPress={onPress}
-            style={({pressed}) => [
-                styles.bigBtn,
-                good && styles.bigBtnGood,
-                bad && styles.bigBtnBad,
-                primary && styles.bigBtnPrimary,
-                pressed && {transform: [{translateY: 1}]},
-            ]}
-        >
-            <Text style={styles.bigBtnText}>{title}</Text>
-        </Pressable>
-    );
-}
-
 const styles = StyleSheet.create({
-    safe: {flex: 1, backgroundColor: "#0b1025", alignItems: "center"},
+    container: {
+        flex: 1,
+        backgroundColor: "#0f0f23",
+    },
+    header: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: 20,
+        paddingBottom: 10,
+    },
+    progressContainer: {
+        flex: 1,
+        marginRight: 15,
+    },
+    progressText: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: "#8892b0",
+        marginBottom: 8,
+        textAlign: "center",
+    },
+    progressBar: {
+        height: 6,
+        backgroundColor: "#1e1e3f",
+        borderRadius: 3,
+        overflow: "hidden",
+    },
+    progressFill: {
+        height: "100%",
+        backgroundColor: "#64ffda",
+        borderRadius: 3,
+    },
+    pauseBtn: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: "#1e1e3f",
+        alignItems: "center",
+        justifyContent: "center",
+        borderWidth: 1,
+        borderColor: "#2a2a5a",
+    },
+    pauseBtnActive: {
+        backgroundColor: "#64ffda",
+    },
+    pauseBtnText: {
+        fontSize: 20,
+    },
+    gameArea: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: 20,
+    },
     card: {
-        backgroundColor: "#111827",
-        margin: 16, padding: 16, borderRadius: 16,
-        borderWidth: 1, borderColor: "rgba(255,255,255,.06)",
-        width: "96%", maxWidth: 900, overflow: "hidden",
+        backgroundColor: "#1e1e3f",
+        borderRadius: 24,
+        padding: 40,
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: 300,
+        width: "100%",
+        maxWidth: 400,
+        borderWidth: 2,
+        borderColor: "#2a2a5a",
+        shadowColor: "#000",
+        shadowOffset: {width: 0, height: 8},
+        shadowOpacity: 0.3,
+        shadowRadius: 16,
+        elevation: 12,
     },
-
-    topRow: {
-        position: "relative", zIndex: 20,
-        flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8,
+    prompt: {
+        color: "#ffffff",
+        fontWeight: "900",
+        textAlign: "center",
+        marginBottom: 20,
+        textShadowColor: "rgba(255, 255, 255, 0.1)",
+        textShadowOffset: {width: 0, height: 2},
+        textShadowRadius: 4,
     },
-    smallBtn: {
-        backgroundColor: "#0b1226",
-        borderColor: "rgba(255,255,255,.12)", borderWidth: 1,
-        borderRadius: 999, paddingHorizontal: 14, paddingVertical: 8,
+    answer: {
+        color: "#64ffda",
+        fontWeight: "700",
+        textAlign: "center",
+        marginBottom: 20,
     },
-    smallBtnActive: {backgroundColor: "#102650", borderColor: "rgba(56,189,248,.5)"},
-    smallBtnText: {color: "#e5e7eb", fontWeight: "600"},
-
-    // Simple circular badge (no external deps). For a true radial sweep, we can add react-native-svg later.
-    ringWrap: {width: 36, height: 36, alignItems: "center", justifyContent: "center"},
-    ringOuter: {
-        width: 36, height: 36, borderRadius: 18,
-        borderWidth: 2, borderColor: "rgba(56,189,248,.5)",
-        alignItems: "center", justifyContent: "center", overflow: "hidden",
+    timerContainer: {
+        width: "100%",
+        height: 4,
+        backgroundColor: "#2a2a5a",
+        borderRadius: 2,
+        overflow: "hidden",
+        marginTop: 20,
     },
-    ringFill: {
-        position: "absolute", left: 0, top: 0, bottom: 0,
-        backgroundColor: "rgba(56,189,248,.35)",
+    timerBar: {
+        height: "100%",
+        backgroundColor: "#64ffda",
+        borderRadius: 2,
     },
-    ringText: {color: "#e5e7eb", fontSize: 10, fontWeight: "700"},
-
-    flash: {
-        alignItems: "center", padding: 16,
-        borderWidth: 1, borderColor: "rgba(255,255,255,.12)",
-        borderRadius: 12, marginBottom: 12, minHeight: 180,
+    holdIndicator: {
+        marginTop: 20,
+        alignItems: "center",
+        width: "100%",
+        maxWidth: 400,
     },
-    prompt: {color: "#e5e7eb", fontWeight: "800", textAlign: "center"},
-    answer: {color: "#e5e7eb", marginTop: 8, opacity: 0.95, textAlign: "center"},
-
-    progress: {
-        height: 6, width: "100%", backgroundColor: "rgba(255,255,255,.06)",
-        marginTop: 12, borderRadius: 999, overflow: "hidden",
+    holdProgress: {
+        width: "100%",
+        height: 8,
+        backgroundColor: "#1e1e3f",
+        borderRadius: 4,
+        overflow: "hidden",
+        marginBottom: 10,
     },
-    bar: {height: "100%", backgroundColor: "#38bdf8"},
-
-    actionArea: {gap: 12, justifyContent: "center", alignItems: "stretch", marginTop: 6},
-
-    bigBtn: {
-        backgroundColor: "#0b1226", borderColor: "rgba(255,255,255,.12)", borderWidth: 1,
-        borderRadius: 14, paddingVertical: 18, paddingHorizontal: 20, alignItems: "center",
+    holdFill: {
+        height: "100%",
+        backgroundColor: "#ff6b6b",
+        borderRadius: 4,
     },
-    bigBtnGood: {borderColor: "rgba(52,211,153,.5)"},
-    bigBtnBad: {borderColor: "rgba(248,113,113,.5)"},
-    bigBtnPrimary: {borderColor: "rgba(56,189,248,.5)", backgroundColor: "#0a1938"},
-    bigBtnText: {color: "#e5e7eb", fontSize: 20, fontWeight: "700"},
-
-    // Pause overlay with centered controls; only panel is interactive
-    pausedOverlay: {
-        position: "absolute", zIndex: 15, left: 0, right: 0, top: 0, bottom: 0,
-        backgroundColor: "rgba(0,0,0,.45)", alignItems: "center", justifyContent: "center",
+    holdText: {
+        fontSize: 18,
+        fontWeight: "600",
+        color: "#ffffff",
     },
-    pausedPanel: {
-        backgroundColor: "rgba(17,24,39,.95)", padding: 16, borderRadius: 14,
-        borderWidth: 1, borderColor: "rgba(255,255,255,.12)", alignItems: "center", gap: 12, minWidth: 240,
+    actionArea: {
+        paddingHorizontal: 20,
+        paddingBottom: 20,
     },
-    pausedText: {color: "#e5e7eb", fontSize: 28, fontWeight: "800"},
-    pauseButtons: {flexDirection: "row", gap: 10, marginTop: 4},
+    holdActions: {
+        gap: 12,
+        alignItems: "center",
+    },
+    markActions: {
+        flexDirection: "row",
+        gap: 15,
+        justifyContent: "center",
+    },
+    actionBtn: {
+        borderRadius: 20,
+        paddingVertical: 16,
+        paddingHorizontal: 24,
+        alignItems: "center",
+        justifyContent: "center",
+        minWidth: 140,
+        borderWidth: 2,
+    },
+    correctBtn: {
+        backgroundColor: "#4ade80",
+        borderColor: "#22c55e",
+    },
+    wrongBtn: {
+        backgroundColor: "#f87171",
+        borderColor: "#ef4444",
+    },
+    changeBtn: {
+        backgroundColor: "#1e1e3f",
+        borderColor: "#f87171",
+    },
+    continueBtn: {
+        backgroundColor: "#64ffda",
+        borderColor: "#4fd1c7",
+    },
+    actionBtnText: {
+        fontSize: 16,
+        fontWeight: "700",
+        color: "#0f0f23",
+    },
+    scoreArea: {
+        flexDirection: "row",
+        justifyContent: "space-around",
+        paddingHorizontal: 20,
+        paddingBottom: 20,
+        borderTopWidth: 1,
+        borderTopColor: "#1e1e3f",
+        paddingTop: 15,
+    },
+    scoreItem: {
+        alignItems: "center",
+    },
+    scoreValue: {
+        fontSize: 24,
+        fontWeight: "800",
+        color: "#64ffda",
+        marginBottom: 4,
+    },
+    scoreLabel: {
+        fontSize: 12,
+        color: "#8892b0",
+        fontWeight: "500",
+        textTransform: "uppercase",
+        letterSpacing: 1,
+    },
+    pauseOverlay: {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        backgroundColor: "rgba(15, 15, 35, 0.95)",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    pausePanel: {
+        backgroundColor: "#1e1e3f",
+        borderRadius: 24,
+        padding: 30,
+        alignItems: "center",
+        minWidth: 280,
+        borderWidth: 2,
+        borderColor: "#2a2a5a",
+        shadowColor: "#000",
+        shadowOffset: {width: 0, height: 8},
+        shadowOpacity: 0.4,
+        shadowRadius: 20,
+        elevation: 16,
+    },
+    pauseEmoji: {
+        fontSize: 60,
+        marginBottom: 15,
+    },
+    pauseTitle: {
+        fontSize: 24,
+        fontWeight: "800",
+        color: "#ffffff",
+        marginBottom: 8,
+    },
+    pauseSubtitle: {
+        fontSize: 16,
+        color: "#8892b0",
+        marginBottom: 25,
+        textAlign: "center",
+    },
+    pauseActions: {
+        gap: 12,
+        width: "100%",
+    },
+    pauseActionBtn: {
+        borderRadius: 16,
+        paddingVertical: 14,
+        paddingHorizontal: 20,
+        alignItems: "center",
+        borderWidth: 2,
+    },
+    resumeBtn: {
+        backgroundColor: "#64ffda",
+        borderColor: "#4fd1c7",
+    },
+    endBtn: {
+        backgroundColor: "#1e1e3f",
+        borderColor: "#f87171",
+    },
+    pauseActionText: {
+        fontSize: 16,
+        fontWeight: "700",
+        color: "#0f0f23",
+    },
 });

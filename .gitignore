@@ -4,3 +4,9 @@
 
 expo-env.d.ts
 # @end expo-cli
+
+# Tempo
+
+node_modules/
+**/tempobook/dynamic/
+**/tempobook/storyboards/

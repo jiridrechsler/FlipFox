@@ -1,6 +1,7 @@
-import React, {createContext, useContext, useMemo, useRef, useState} from "react";
+import React, {createContext, useContext, useMemo, useRef, useState, useEffect} from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// ===== DATA (English only; add more categories freely) =====
+// ===== DATA =====
 type Category = { ordered?: boolean; en: string[]; emoji?: string[] };
 export const data: Record<string, Category> = {
     days: {ordered: true, en: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]},
@@ -32,6 +33,7 @@ const shuffle = (a: number[]) => {
     }
     return arr;
 };
+
 type Mode = "num-to-word" | "word-to-num" | "emoji-to-word" | "word-to-emoji";
 
 function modesForCat(cat: Category): Mode[] {
@@ -60,42 +62,76 @@ function buildOrder(count: number, poolLen: number): number[] {
     return out.slice(0, count);
 }
 
-// ===== STATE =====
-type Config = { category: keyof typeof data; delaySec: number; count: number };
+// ===== PERSISTENT SETTINGS =====
+type Settings = {
+    category: keyof typeof data;
+    delaySec: number;
+    count: number;
+    mode: Mode;
+};
 
-type GameState = Config & {
-    pool: PoolItem[]; order: number[]; currentIndex: number;
-    seen: number; correct: number; accuracy: number;
-    prompt: string; answer: string; showing: boolean;
-    barPct: number; paused: boolean; finished: boolean;
-    holding: boolean; holdPct: number;
+type Statistics = {
+    totalGames: number;
+    totalCorrect: number;
+    totalSeen: number;
+    bestAccuracy: number;
+    categoryStats: Record<string, {games: number; correct: number; seen: number}>;
+};
+
+// ===== STATE =====
+type GameState = {
+    // Settings (persistent)
+    settings: Settings;
+    statistics: Statistics;
+    
+    // Game state
+    pool: PoolItem[];
+    order: number[];
+    currentIndex: number;
+    seen: number;
+    correct: number;
+    accuracy: number;
+    prompt: string;
+    answer: string;
+    showing: boolean;
+    barPct: number;
+    paused: boolean;
+    finished: boolean;
+    holding: boolean;
+    holdPct: number;
     lastChoice?: { poolIndex: number; good: boolean };
+    
+    // UI state
+    gameActive: boolean;
+    showingResults: boolean;
 };
 
 type Ctx = {
     state: GameState;
     actions: {
-        configure(p: Partial<Config>): void;
-        startNewRound(): void;
+        updateSettings(settings: Partial<Settings>): void;
+        startNewGame(): void;
         startTimer(): void;
         stopTimer(): void;
         togglePause(): void;
-        endNow(): void;
+        endGame(): void;
         mark(good: boolean): void;
         continueNow(): void;
         changeLastToWrong(): void;
+        dismissResults(): void;
+        resetStatistics(): void;
     };
 };
 
 const GameContext = createContext<Ctx | null>(null);
 
-function buildCardFor(poolItem: PoolItem) {
+function buildCardFor(poolItem: PoolItem, mode: Mode) {
     const cat = data[poolItem.catKey];
     const en = cat.en[poolItem.idx];
     const emoji = cat.emoji?.[poolItem.idx] ?? "";
     const num = poolItem.idx + 1;
-    const pref = modesForCat(cat)[0];
-    switch (pref) {
+    
+    switch (mode) {
         case "emoji-to-word":
             return {prompt: emoji || "—", answer: en};
         case "word-to-emoji":
@@ -108,13 +144,28 @@ function buildCardFor(poolItem: PoolItem) {
     }
 }
 
-function buildInitialState(cfg: Config): GameState {
-    const pool = buildPool(cfg.category);
-    const order = buildOrder(cfg.count, pool.length);
+const defaultSettings: Settings = {
+    category: "days",
+    delaySec: 2,
+    count: 10,
+    mode: "num-to-word"
+};
+
+const defaultStatistics: Statistics = {
+    totalGames: 0,
+    totalCorrect: 0,
+    totalSeen: 0,
+    bestAccuracy: 0,
+    categoryStats: {}
+};
+
+function buildInitialGameState(settings: Settings): Omit<GameState, 'settings' | 'statistics'> {
+    const pool = buildPool(settings.category);
+    const order = buildOrder(settings.count, pool.length);
     const firstPoolIndex = order[0] ?? 0;
-    const first = buildCardFor(pool[firstPoolIndex] ?? {catKey: "days", idx: 0});
+    const first = buildCardFor(pool[firstPoolIndex] ?? {catKey: "days", idx: 0}, settings.mode);
+    
     return {
-        ...cfg,
         pool,
         order,
         currentIndex: 0,
@@ -123,23 +174,70 @@ function buildInitialState(cfg: Config): GameState {
         accuracy: 0,
         prompt: first.prompt,
         answer: first.answer,
-        showing: cfg.delaySec === 0,
+        showing: settings.delaySec === 0,
         barPct: 0,
         paused: false,
         finished: false,
         holding: false,
         holdPct: 0,
+        gameActive: false,
+        showingResults: false,
     };
 }
 
 export function GameProvider({children}: { children: React.ReactNode }) {
-    const [cfg, setCfg] = useState<Config>({category: "days", delaySec: 2, count: 30});
-    const [state, setState] = useState<GameState>(() => buildInitialState(cfg));
+    const [state, setState] = useState<GameState>(() => ({
+        settings: defaultSettings,
+        statistics: defaultStatistics,
+        ...buildInitialGameState(defaultSettings)
+    }));
 
     const revealTimerRef = useRef<NodeJS.Timer | null>(null);
     const holdTimerRef = useRef<NodeJS.Timer | null>(null);
     const holdEndRef = useRef<NodeJS.Timeout | null>(null);
-    const t0 = useRef<number>(0);
+
+    // Load persistent data on mount
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const [settingsData, statsData] = await Promise.all([
+                    AsyncStorage.getItem('flipfox_settings'),
+                    AsyncStorage.getItem('flipfox_statistics')
+                ]);
+                
+                const settings = settingsData ? JSON.parse(settingsData) : defaultSettings;
+                const statistics = statsData ? JSON.parse(statsData) : defaultStatistics;
+                
+                setState(prev => ({
+                    ...prev,
+                    settings,
+                    statistics,
+                    ...buildInitialGameState(settings)
+                }));
+            } catch (error) {
+                console.error('Failed to load data:', error);
+            }
+        };
+        loadData();
+    }, []);
+
+    // Save settings when they change
+    const saveSettings = async (settings: Settings) => {
+        try {
+            await AsyncStorage.setItem('flipfox_settings', JSON.stringify(settings));
+        } catch (error) {
+            console.error('Failed to save settings:', error);
+        }
+    };
+
+    // Save statistics when they change
+    const saveStatistics = async (statistics: Statistics) => {
+        try {
+            await AsyncStorage.setItem('flipfox_statistics', JSON.stringify(statistics));
+        } catch (error) {
+            console.error('Failed to save statistics:', error);
+        }
+    };
 
     const stopRevealTimer = () => {
         if (revealTimerRef.current) {
@@ -147,6 +245,7 @@ export function GameProvider({children}: { children: React.ReactNode }) {
             revealTimerRef.current = null;
         }
     };
+
     const stopHoldTimers = () => {
         if (holdTimerRef.current) {
             clearInterval(holdTimerRef.current);
@@ -162,16 +261,44 @@ export function GameProvider({children}: { children: React.ReactNode }) {
         setState((s) => {
             if (s.finished) return s;
             const last = s.currentIndex >= s.order.length - 1;
-            if (last) return {...s, holding: false, holdPct: 0, finished: true, barPct: 100};
+            if (last) {
+                // Game finished - update statistics
+                const newStats = {
+                    ...s.statistics,
+                    totalGames: s.statistics.totalGames + 1,
+                    totalCorrect: s.statistics.totalCorrect + s.correct,
+                    totalSeen: s.statistics.totalSeen + s.seen,
+                    bestAccuracy: Math.max(s.statistics.bestAccuracy, s.accuracy),
+                    categoryStats: {
+                        ...s.statistics.categoryStats,
+                        [s.settings.category]: {
+                            games: (s.statistics.categoryStats[s.settings.category]?.games || 0) + 1,
+                            correct: (s.statistics.categoryStats[s.settings.category]?.correct || 0) + s.correct,
+                            seen: (s.statistics.categoryStats[s.settings.category]?.seen || 0) + s.seen,
+                        }
+                    }
+                };
+                saveStatistics(newStats);
+                return {
+                    ...s, 
+                    holding: false, 
+                    holdPct: 0, 
+                    finished: true, 
+                    barPct: 100,
+                    showingResults: true,
+                    statistics: newStats
+                };
+            }
+            
             const nextIndex = s.currentIndex + 1;
             const nextPoolIndex = s.order[nextIndex];
-            const next = buildCardFor(s.pool[nextPoolIndex]);
+            const next = buildCardFor(s.pool[nextPoolIndex], s.settings.mode);
             return {
                 ...s,
                 currentIndex: nextIndex,
                 prompt: next.prompt,
                 answer: next.answer,
-                showing: s.delaySec === 0,
+                showing: s.settings.delaySec === 0,
                 barPct: 0,
                 holding: false,
                 holdPct: 0,
@@ -180,18 +307,31 @@ export function GameProvider({children}: { children: React.ReactNode }) {
     };
 
     const actions: Ctx["actions"] = {
-        configure(p) {
-            setCfg((prev) => ({...prev, ...p}));
+        updateSettings(newSettings) {
+            setState((prev) => {
+                const updatedSettings = {...prev.settings, ...newSettings};
+                saveSettings(updatedSettings);
+                return {
+                    ...prev,
+                    settings: updatedSettings,
+                    ...buildInitialGameState(updatedSettings)
+                };
+            });
         },
 
-        startNewRound() {
-            setState(buildInitialState({...cfg}));
+        startNewGame() {
+            setState((prev) => ({
+                ...prev,
+                ...buildInitialGameState(prev.settings),
+                gameActive: true,
+                showingResults: false
+            }));
         },
 
         startTimer() {
-            if (state.delaySec <= 0 || state.paused || state.finished || state.holding) return;
+            if (state.settings.delaySec <= 0 || state.paused || state.finished || state.holding) return;
             stopRevealTimer();
-            const total = state.delaySec * 1000;
+            const total = state.settings.delaySec * 1000;
             const start = Date.now();
             revealTimerRef.current = setInterval(() => {
                 const elapsed = Date.now() - start;
@@ -213,14 +353,13 @@ export function GameProvider({children}: { children: React.ReactNode }) {
             stopHoldTimers();
         },
 
-        endNow() {
+        endGame() {
             stopRevealTimer();
             stopHoldTimers();
-            setState((s) => ({...s, finished: true, holding: false, holdPct: 0}));
+            setState((s) => ({...s, finished: true, holding: false, holdPct: 0, showingResults: true}));
         },
 
         mark(good) {
-            // show answer, enter 1s hold
             stopRevealTimer();
             stopHoldTimers();
 
@@ -241,7 +380,7 @@ export function GameProvider({children}: { children: React.ReactNode }) {
                 };
             });
 
-            const HOLD_MS = 1000;
+            const HOLD_MS = 1500;
             const start = Date.now();
             holdTimerRef.current = setInterval(() => {
                 const pct = Math.min(100, ((Date.now() - start) / HOLD_MS) * 100);
@@ -269,9 +408,19 @@ export function GameProvider({children}: { children: React.ReactNode }) {
                 return {...s, correct, accuracy, lastChoice: {...s.lastChoice, good: false}};
             });
         },
+
+        dismissResults() {
+            setState((s) => ({...s, showingResults: false, gameActive: false}));
+        },
+
+        resetStatistics() {
+            const newStats = defaultStatistics;
+            saveStatistics(newStats);
+            setState((s) => ({...s, statistics: newStats}));
+        }
     };
 
-    const value = useMemo(() => ({state, actions}), [state, cfg]);
+    const value = useMemo(() => ({state, actions}), [state]);
     return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
 }
 
