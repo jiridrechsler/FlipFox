@@ -1,24 +1,11 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {SafeAreaView, View, Text, StyleSheet, Pressable, ScrollView, Dimensions} from "react-native";
-import {Link, useRouter} from "expo-router";
+import {useRouter} from "expo-router";
 import {useGame} from "../src/store";
 
 export default function EndScreen() {
     const router = useRouter();
     const {state, actions} = useGame();
-    const {width} = Dimensions.get('window');
-
-    useEffect(() => {
-        // Auto-dismiss results after 10 seconds if user doesn't interact
-        const timer = setTimeout(() => {
-            if (state.showingResults) {
-                actions.dismissResults();
-                router.replace("/");
-            }
-        }, 10000);
-
-        return () => clearTimeout(timer);
-    }, []);
 
     const playAgain = () => {
         actions.startNewGame();
@@ -168,10 +155,10 @@ export default function EndScreen() {
                 {/* Action Buttons */}
                 <View style={styles.actionButtons}>
                     <Pressable onPress={playAgain} style={[styles.actionBtn, styles.playAgainBtn]}>
-                        <Text style={styles.actionBtnText}>🔄 Play Again</Text>
+                        <Text style={[styles.actionBtnText, styles.playAgainBtnText]}>🔄 Play Again</Text>
                     </Pressable>
                     <Pressable onPress={goHome} style={[styles.actionBtn, styles.homeBtn]}>
-                        <Text style={styles.actionBtnText}>🏠 Home</Text>
+                        <Text style={[styles.actionBtnText, styles.homeBtnText]}>🏠 Home</Text>
                     </Pressable>
                 </View>
 
@@ -394,10 +381,16 @@ const styles = StyleSheet.create({
     homeBtn: {
         backgroundColor: "#1e1e3f",
         borderColor: "#64ffda",
+        color: "#64ffda",
     },
     actionBtnText: {
         fontSize: 18,
         fontWeight: "700",
+    },
+    homeBtnText: {
+        color: "#64ffda",
+    },
+    playAgainBtnText: {
         color: "#0f0f23",
     },
     overallStats: {
