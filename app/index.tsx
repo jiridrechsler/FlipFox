@@ -51,8 +51,10 @@ export default function ConfigScreen() {
     return (
         <SafeAreaView style={styles.safe}>
             <View style={[styles.card, {maxWidth: isWide ? 900 : undefined}]}>
-                <Text style={styles.h1}>Flashcards</Text>
-                <Text style={styles.sub}>Pick your practice and go</Text>
+                <Text style={styles.intro}>
+                    Welcome to FlipFox — your playful companion for fast and fun memory training!
+                    Pick a category, set your pace, and start flipping your way to better recall.
+                </Text>
 
                 {/* Category */}
                 <View style={styles.block}>
@@ -144,6 +146,7 @@ function Btn({
 }
 
 const styles = StyleSheet.create({
+
     safe: {flex: 1, backgroundColor: "#0b1025", alignItems: "center"},
     card: {
         backgroundColor: "#111827",
@@ -184,6 +187,12 @@ const styles = StyleSheet.create({
     btnPrimary: {backgroundColor: "#0a1938", borderColor: "rgba(56,189,248,.5)"},
     btnDisabled: {opacity: 0.6},
     btnText: {color: "#e5e7eb", fontSize: 16, fontWeight: "600"},
-
     picker: {backgroundColor: "#0b1226", color: "#e5e7eb", borderRadius: 10},
+    intro: {
+        fontSize: 14,
+        textAlign: "center",
+        marginBottom: 10,
+        lineHeight: 20,
+        color: "#e5e7eb",
+    },
 });
