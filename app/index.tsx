@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {SafeAreaView, View, Text, StyleSheet, Pressable, ScrollView} from "react-native";
+import {SafeAreaView, View, Text, StyleSheet, Pressable, ScrollView, TextInput} from "react-native";
 import {Picker} from "@react-native-picker/picker";
 import {useRouter} from "expo-router";
 import {useGame, data} from "../src/store";
@@ -9,8 +9,8 @@ type Mode = "num-to-word" | "word-to-num" | "emoji-to-word" | "word-to-emoji";
 export default function HomeScreen() {
     const router = useRouter();
     const {state, actions} = useGame();
-    const [showSettings, setShowSettings] = useState(false);
     const [showStats, setShowStats] = useState(false);
+    const [wordCountInput, setWordCountInput] = useState(state.settings.count.toString());
 
     const categories = Object.keys(data) as (keyof typeof data)[];
     
@@ -46,6 +46,14 @@ export default function HomeScreen() {
 
     const formatCategoryName = (key: string) => {
         return key.charAt(0).toUpperCase() + key.slice(1);
+    };
+
+    const handleWordCountChange = (text: string) => {
+        setWordCountInput(text);
+        const num = parseInt(text);
+        if (!isNaN(num) && num > 0 && num <= 100) {
+            actions.updateSettings({count: num});
+        }
     };
 
     if (showStats) {
@@ -99,108 +107,7 @@ export default function HomeScreen() {
         );
     }
 
-    if (showSettings) {
-        const modeOptions = getModeOptions(state.settings.category);
-        
-        return (
-            <SafeAreaView style={styles.container}>
-                <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-                    <View style={styles.header}>
-                        <Text style={styles.title}>⚙️ Settings</Text>
-                        <Pressable onPress={() => setShowSettings(false)} style={styles.closeBtn}>
-                            <Text style={styles.closeBtnText}>✕</Text>
-                        </Pressable>
-                    </View>
-
-                    <View style={styles.settingsCard}>
-                        <View style={styles.settingGroup}>
-                            <Text style={styles.settingLabel}>Category</Text>
-                            <View style={styles.pickerContainer}>
-                                <Picker
-                                    selectedValue={state.settings.category}
-                                    onValueChange={(value) => actions.updateSettings({category: value})}
-                                    style={styles.picker}
-                                >
-                                    {categories.map((cat) => (
-                                        <Picker.Item
-                                            key={cat}
-                                            label={formatCategoryName(cat)}
-                                            value={cat}
-                                        />
-                                    ))}
-                                </Picker>
-                            </View>
-                        </View>
-
-                        <View style={styles.settingGroup}>
-                            <Text style={styles.settingLabel}>Mode</Text>
-                            <View style={styles.pickerContainer}>
-                                <Picker
-                                    selectedValue={state.settings.mode}
-                                    onValueChange={(value) => actions.updateSettings({mode: value})}
-                                    style={styles.picker}
-                                >
-                                    {modeOptions.map((mode) => (
-                                        <Picker.Item
-                                            key={mode.value}
-                                            label={mode.label}
-                                            value={mode.value}
-                                        />
-                                    ))}
-                                </Picker>
-                            </View>
-                        </View>
-
-                        <View style={styles.settingGroup}>
-                            <Text style={styles.settingLabel}>Words per Game</Text>
-                            <View style={styles.numberButtons}>
-                                {[5, 10, 15, 20, 30].map((num) => (
-                                    <Pressable
-                                        key={num}
-                                        onPress={() => actions.updateSettings({count: num})}
-                                        style={[
-                                            styles.numberBtn,
-                                            state.settings.count === num && styles.numberBtnActive
-                                        ]}
-                                    >
-                                        <Text style={[
-                                            styles.numberBtnText,
-                                            state.settings.count === num && styles.numberBtnTextActive
-                                        ]}>
-                                            {num}
-                                        </Text>
-                                    </Pressable>
-                                ))}
-                            </View>
-                        </View>
-
-                        <View style={styles.settingGroup}>
-                            <Text style={styles.settingLabel}>Reveal Delay (seconds)</Text>
-                            <View style={styles.numberButtons}>
-                                {[0, 1, 2, 3, 5].map((num) => (
-                                    <Pressable
-                                        key={num}
-                                        onPress={() => actions.updateSettings({delaySec: num})}
-                                        style={[
-                                            styles.numberBtn,
-                                            state.settings.delaySec === num && styles.numberBtnActive
-                                        ]}
-                                    >
-                                        <Text style={[
-                                            styles.numberBtnText,
-                                            state.settings.delaySec === num && styles.numberBtnTextActive
-                                        ]}>
-                                            {num}
-                                        </Text>
-                                    </Pressable>
-                                ))}
-                            </View>
-                        </View>
-                    </View>
-                </ScrollView>
-            </SafeAreaView>
-        );
-    }
+    const modeOptions = getModeOptions(state.settings.category);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -217,28 +124,80 @@ export default function HomeScreen() {
                     <Text style={styles.heroSubtitle}>Your playful companion for memory training!</Text>
                 </View>
 
-                {/* Current Settings Preview */}
-                <View style={styles.previewCard}>
-                    <Text style={styles.previewTitle}>🎯 Ready to Play</Text>
-                    <View style={styles.previewDetails}>
-                        <View style={styles.previewItem}>
-                            <Text style={styles.previewLabel}>🎨 Category</Text>
-                            <Text style={styles.previewValue}>{formatCategoryName(state.settings.category)}</Text>
+                {/* Game Settings */}
+                <View style={styles.settingsCard}>
+                    <Text style={styles.settingsTitle}>🎯 Game Settings</Text>
+                    
+                    <View style={styles.settingGroup}>
+                        <Text style={styles.settingLabel}>🎨 Category</Text>
+                        <View style={styles.pickerContainer}>
+                            <Picker
+                                selectedValue={state.settings.category}
+                                onValueChange={(value) => actions.updateSettings({category: value})}
+                                style={styles.picker}
+                            >
+                                {categories.map((cat) => (
+                                    <Picker.Item
+                                        key={cat}
+                                        label={formatCategoryName(cat)}
+                                        value={cat}
+                                    />
+                                ))}
+                            </Picker>
                         </View>
-                        <View style={styles.previewItem}>
-                            <Text style={styles.previewLabel}>🔄 Mode</Text>
-                            <Text style={styles.previewValue}>
-                                {getModeOptions(state.settings.category)
-                                    .find(m => m.value === state.settings.mode)?.label || "Number → Word"}
-                            </Text>
+                    </View>
+
+                    <View style={styles.settingGroup}>
+                        <Text style={styles.settingLabel}>🔄 Mode</Text>
+                        <View style={styles.pickerContainer}>
+                            <Picker
+                                selectedValue={state.settings.mode}
+                                onValueChange={(value) => actions.updateSettings({mode: value})}
+                                style={styles.picker}
+                            >
+                                {modeOptions.map((mode) => (
+                                    <Picker.Item
+                                        key={mode.value}
+                                        label={mode.label}
+                                        value={mode.value}
+                                    />
+                                ))}
+                            </Picker>
                         </View>
-                        <View style={styles.previewItem}>
-                            <Text style={styles.previewLabel}>📝 Words</Text>
-                            <Text style={styles.previewValue}>{state.settings.count}</Text>
-                        </View>
-                        <View style={styles.previewItem}>
-                            <Text style={styles.previewLabel}>⏱️ Delay</Text>
-                            <Text style={styles.previewValue}>{state.settings.delaySec}s</Text>
+                    </View>
+
+                    <View style={styles.settingGroup}>
+                        <Text style={styles.settingLabel}>📝 Number of Words</Text>
+                        <TextInput
+                            style={styles.numberInput}
+                            value={wordCountInput}
+                            onChangeText={handleWordCountChange}
+                            keyboardType="numeric"
+                            placeholder="Enter number (1-100)"
+                            placeholderTextColor="#94a3b8"
+                        />
+                    </View>
+
+                    <View style={styles.settingGroup}>
+                        <Text style={styles.settingLabel}>⏱️ Reveal Delay (seconds)</Text>
+                        <View style={styles.numberButtons}>
+                            {[0, 1, 2, 3, 5].map((num) => (
+                                <Pressable
+                                    key={num}
+                                    onPress={() => actions.updateSettings({delaySec: num})}
+                                    style={[
+                                        styles.numberBtn,
+                                        state.settings.delaySec === num && styles.numberBtnActive
+                                    ]}
+                                >
+                                    <Text style={[
+                                        styles.numberBtnText,
+                                        state.settings.delaySec === num && styles.numberBtnTextActive
+                                    ]}>
+                                        {num}
+                                    </Text>
+                                </Pressable>
+                            ))}
                         </View>
                     </View>
                 </View>
@@ -250,10 +209,6 @@ export default function HomeScreen() {
 
                 {/* Secondary Actions */}
                 <View style={styles.actionGrid}>
-                    <Pressable onPress={() => setShowSettings(true)} style={styles.actionButton}>
-                        <Text style={styles.actionEmoji}>⚙️</Text>
-                        <Text style={styles.actionText}>Settings</Text>
-                    </Pressable>
                     <Pressable onPress={() => setShowStats(true)} style={styles.actionButton}>
                         <Text style={styles.actionEmoji}>📊</Text>
                         <Text style={styles.actionText}>Statistics</Text>
@@ -385,7 +340,7 @@ const styles = StyleSheet.create({
         fontWeight: "500",
         textAlign: "center",
     },
-    previewCard: {
+    settingsCard: {
         backgroundColor: "#ffffff",
         borderRadius: 24,
         padding: 20,
@@ -397,31 +352,71 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 8,
         elevation: 8,
+        gap: 20,
     },
-    previewTitle: {
+    settingsTitle: {
         fontSize: 20,
         fontWeight: "700",
         color: "#8b5a3c",
-        marginBottom: 15,
         textAlign: "center",
+        marginBottom: 5,
     },
-    previewDetails: {
-        gap: 12,
+    settingGroup: {
+        gap: 10,
     },
-    previewItem: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
+    settingLabel: {
+        fontSize: 16,
+        fontWeight: "700",
+        color: "#8b5a3c",
     },
-    previewLabel: {
+    pickerContainer: {
+        backgroundColor: "#fef3e2",
+        borderRadius: 16,
+        overflow: "hidden",
+        borderWidth: 2,
+        borderColor: "#ffb380",
+    },
+    picker: {
+        color: "#8b5a3c",
+        backgroundColor: "transparent",
+    },
+    numberInput: {
+        backgroundColor: "#fef3e2",
+        borderRadius: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
         fontSize: 16,
         color: "#8b5a3c",
         fontWeight: "600",
+        borderWidth: 2,
+        borderColor: "#ffb380",
     },
-    previewValue: {
+    numberButtons: {
+        flexDirection: "row",
+        gap: 10,
+        flexWrap: "wrap",
+    },
+    numberBtn: {
+        backgroundColor: "#fef3e2",
+        borderRadius: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        minWidth: 50,
+        alignItems: "center",
+        borderWidth: 2,
+        borderColor: "#ffb380",
+    },
+    numberBtnActive: {
+        backgroundColor: "#ff8c42",
+        borderColor: "#ff8c42",
+    },
+    numberBtnText: {
         fontSize: 16,
-        color: "#ff8c42",
-        fontWeight: "700",
+        fontWeight: "600",
+        color: "#8b5a3c",
+    },
+    numberBtnTextActive: {
+        color: "#ffffff",
     },
     playButton: {
         backgroundColor: "#ff8c42",
@@ -447,12 +442,10 @@ const styles = StyleSheet.create({
         textShadowRadius: 2,
     },
     actionGrid: {
-        flexDirection: "row",
-        gap: 15,
+        alignItems: "center",
         marginBottom: 25,
     },
     actionButton: {
-        flex: 1,
         backgroundColor: "#ffffff",
         borderRadius: 20,
         padding: 20,
@@ -464,6 +457,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
+        minWidth: 150,
     },
     actionEmoji: {
         fontSize: 32,
@@ -522,7 +516,7 @@ const styles = StyleSheet.create({
         fontWeight: "500",
         textAlign: "center",
     },
-    // Settings & Stats styles
+    // Stats styles
     statsCard: {
         backgroundColor: "#ffffff",
         borderRadius: 20,
@@ -595,65 +589,6 @@ const styles = StyleSheet.create({
     resetBtnText: {
         fontSize: 16,
         fontWeight: "600",
-        color: "#ffffff",
-    },
-    settingsCard: {
-        gap: 25,
-    },
-    settingGroup: {
-        backgroundColor: "#ffffff",
-        borderRadius: 20,
-        padding: 20,
-        borderWidth: 2,
-        borderColor: "#ffb380",
-        shadowColor: "#000",
-        shadowOffset: {width: 0, height: 2},
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    settingLabel: {
-        fontSize: 18,
-        fontWeight: "700",
-        color: "#8b5a3c",
-        marginBottom: 15,
-    },
-    pickerContainer: {
-        backgroundColor: "#fef3e2",
-        borderRadius: 16,
-        overflow: "hidden",
-        borderWidth: 2,
-        borderColor: "#ffb380",
-    },
-    picker: {
-        color: "#8b5a3c",
-        backgroundColor: "transparent",
-    },
-    numberButtons: {
-        flexDirection: "row",
-        gap: 10,
-        flexWrap: "wrap",
-    },
-    numberBtn: {
-        backgroundColor: "#fef3e2",
-        borderRadius: 16,
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        minWidth: 50,
-        alignItems: "center",
-        borderWidth: 2,
-        borderColor: "#ffb380",
-    },
-    numberBtnActive: {
-        backgroundColor: "#ff8c42",
-        borderColor: "#ff8c42",
-    },
-    numberBtnText: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: "#8b5a3c",
-    },
-    numberBtnTextActive: {
         color: "#ffffff",
     },
 });
