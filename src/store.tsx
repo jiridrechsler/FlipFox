@@ -22,6 +22,58 @@ export const data: Record<string, Category> = {
         en: ["apple", "banana", "carrot", "bread", "cheese", "egg", "rice", "pizza", "burger", "milk"],
         emoji: ["🍎", "🍌", "🥕", "🍞", "🧀", "🥚", "🍚", "🍕", "🍔", "🥛"]
     },
+    drinks: {
+        en: ["water","coffee","tea","milk","juice","soda","beer","wine","champagne","cocktail","martini","smoothie","energy drink","hot chocolate","sparkling water"],
+        emoji: ["💧","☕","🍵","🥛","🧃","🥤","🍺","🍷","🍾","🍹","🍸","🧋","⚡","🍫","💦"]
+    },
+    vegetables: {
+        en: ["carrot","tomato","potato","corn","cucumber","eggplant","broccoli","pepper","mushroom","garlic","onion","lettuce","pumpkin","peas","sweet potato","olives","ginger","avocado","spinach","cabbage"],
+        emoji: ["🥕","🍅","🥔","🌽","🥒","🍆","🥦","🌶️","🍄","🧄","🧅","🥬","🎃","🫛","🍠","🫒","🫚","🥑","🥬","🥬"]
+    },
+    clothing: {
+        en: ["shirt","pants","shorts","dress","skirt","coat","jacket","shoes","boots","sneakers","high heels","hat","cap","socks","gloves","scarf","belt","tie","swimsuit","backpack","bag","glasses","watch","ring","umbrella"],
+        emoji: ["👕","👖","🩳","👗","👗","🧥","🧥","👟","🥾","👟","👠","👒","🧢","🧦","🧤","🧣","🧷","👔","🩱","🎒","👜","👓","⌚","💍","☂️"]
+    },
+    household: {
+        en: ["bed","sofa","chair","table","lamp","door","window","shower","toilet","bathtub","mirror","carpet","clock","bookshelf","cup","plate","fork","knife","spoon","broom","bucket","sponge","soap","trash can","vacuum"],
+        emoji: ["🛏️","🛋️","🪑","🍽️","💡","🚪","🪟","🚿","🚽","🛁","🪞","🧶","⏰","📚","☕","🍽️","🍴","🔪","🥄","🧹","🪣","🧽","🧼","🗑️","🧹"]
+    },
+    body: {
+        en: ["head","hair","face","eye","ear","nose","mouth","tooth","tongue","neck","shoulder","arm","hand","finger","chest","back","belly","leg","knee","foot","toe","heart","brain","skin","bone"],
+        emoji: ["🙂","💇","🙂","👁️","👂","👃","👄","🦷","👅","🦴","💪","💪","✋","☝️","🫁","🦴","🫃","🦵","🦵","🦶","🦶","❤️","🧠","🧴","🦴"]
+    },
+    transportation: {
+        en: ["car","bus","tram","train","subway","airplane","helicopter","ship","boat","bicycle","motorbike","scooter","rocket","taxi","truck","fire engine","police car","ambulance","railway","station"],
+        emoji: ["🚗","🚌","🚊","🚆","🚇","✈️","🚁","🚢","⛵","🚲","🏍️","🛵","🚀","🚕","🚚","🚒","🚓","🚑","🛤️","🚉"]
+    },
+    sports: {
+        en: ["soccer","basketball","tennis","baseball","volleyball","rugby","american football","golf","table tennis","badminton","hockey","ice skating","swimming","cycling","running","skiing","snowboarding","boxing","karate","weightlifting"],
+        emoji: ["⚽","🏀","🎾","⚾","🏐","🏉","🏈","⛳","🏓","🏸","🏒","⛸️","🏊","🚴","🏃","🎿","🏂","🥊","🥋","🏋️"]
+    },
+    directions: {
+        en: ["up","down","left","right","forward","back","north","south","east","west"],
+        emoji: ["⬆️","⬇️","⬅️","➡️","⏩","⏪","🧭","🧭","➡️","⬅️"]
+    },
+    weather: {
+        en: ["sunny","cloudy","rainy","snowy","stormy","windy","foggy","hot","cold","warm","thunder","hail","drizzle","overcast","clear"],
+        emoji: ["☀️","☁️","🌧️","❄️","⛈️","💨","🌫️","🔥","🥶","🙂","⚡","🌨️","🌦️","☁️","🌞"]
+    },
+    technology: {
+        en: ["computer","laptop","keyboard","mouse","monitor","smartphone","tablet","camera","tv","headphones","speaker","battery","plug","light bulb","printer","hard drive","usb","satellite","robot","drone"],
+        emoji: ["🖥️","💻","⌨️","🖱️","🖥️","📱","📱","📷","📺","🎧","🔊","🔋","🔌","💡","🖨️","💽","🔌","🛰️","🤖","🛸"]
+    },
+    nature: {
+        en: ["tree","flower","leaf","cactus","mushroom","mountain","river","ocean","sun","moon","star","cloud","rain","snow","fire","rock","volcano","desert","island","rainbow"],
+        emoji: ["🌳","🌸","🍃","🌵","🍄","⛰️","🏞️","🌊","☀️","🌙","⭐","☁️","🌧️","❄️","🔥","🪨","🌋","🏜️","🏝️","🌈"]
+    },
+    professions: {
+        en: ["teacher","student","doctor","nurse","engineer","programmer","designer","chef","waiter","driver","farmer","police officer","firefighter","pilot","artist","musician","actor","writer","journalist","photographer","dentist","mechanic","electrician","plumber","architect","lawyer","judge","scientist","cashier","manager"],
+        emoji: ["🧑‍🏫","🧑‍🎓","🧑‍⚕️","🧑‍⚕️","🧑‍🔧","💻","🎨","🧑‍🍳","🧑‍🍳","🚗","👩‍🌾","👮","👩‍🚒","🧑‍✈️","🎨","🎵","🎭","✍️","📰","📷","🦷","🧰","🔌","🔧","📐","⚖️","⚖️","🔬","💳","👔"]
+    },
+    countries_europe: {
+        en: ["Czechia","Slovakia","Poland","Germany","Austria","Hungary","France","Spain","Italy","Portugal","Netherlands","Belgium","Switzerland","Sweden","Norway","Denmark","Finland","Greece","Ireland","United Kingdom"],
+        emoji: ["🇨🇿","🇸🇰","🇵🇱","🇩🇪","🇦🇹","🇭🇺","🇫🇷","🇪🇸","🇮🇹","🇵🇹","🇳🇱","🇧🇪","🇨🇭","🇸🇪","🇳🇴","🇩🇰","🇫🇮","🇬🇷","🇮🇪","🇬🇧"]
+    }
 };
 
 // ===== HELPERS =====
@@ -42,6 +94,24 @@ function modesForCat(cat: Category): Mode[] {
     if (cat.emoji) out.push("emoji-to-word", "word-to-emoji");
     if (out.length === 0) out.push("num-to-word", "word-to-num");
     return out;
+}
+function getFirstMode(cat: Category): Mode {
+    return modesForCat(cat)[0];
+}
+
+type CatKey = keyof typeof data;
+
+function modesForCatKey(catKey: CatKey): Mode[] {
+    const cat = data[catKey];
+    const out: Mode[] = [];
+    if (cat.ordered) out.push("num-to-word", "word-to-num");
+    if (cat.emoji) out.push("emoji-to-word", "word-to-emoji");
+    if (out.length === 0) out.push("num-to-word", "word-to-num");
+    return out;
+}
+
+function getFirstModeKey(catKey: CatKey): Mode {
+    return modesForCatKey(catKey)[0];
 }
 
 type PoolItem = { catKey: keyof typeof data; idx: number };
@@ -75,7 +145,7 @@ type Statistics = {
     totalCorrect: number;
     totalSeen: number;
     bestAccuracy: number;
-    categoryStats: Record<string, {games: number; correct: number; seen: number}>;
+    categoryStats: Record<string, { games: number; correct: number; seen: number }>;
 };
 
 // ===== STATE =====
@@ -83,7 +153,7 @@ type GameState = {
     // Settings (persistent)
     settings: Settings;
     statistics: Statistics;
-    
+
     // Game state
     pool: PoolItem[];
     order: number[];
@@ -100,7 +170,7 @@ type GameState = {
     holding: boolean;
     holdPct: number;
     lastChoice?: { poolIndex: number; good: boolean };
-    
+
     // UI state
     gameActive: boolean;
     showingResults: boolean;
@@ -130,7 +200,7 @@ function buildCardFor(poolItem: PoolItem, mode: Mode) {
     const en = cat.en[poolItem.idx];
     const emoji = cat.emoji?.[poolItem.idx] ?? "";
     const num = poolItem.idx + 1;
-    
+
     switch (mode) {
         case "emoji-to-word":
             return {prompt: emoji || "—", answer: en};
@@ -164,7 +234,7 @@ function buildInitialGameState(settings: Settings): Omit<GameState, 'settings' |
     const order = buildOrder(settings.count, pool.length);
     const firstPoolIndex = order[0] ?? 0;
     const first = buildCardFor(pool[firstPoolIndex] ?? {catKey: "days", idx: 0}, settings.mode);
-    
+
     return {
         pool,
         order,
@@ -204,10 +274,10 @@ export function GameProvider({children}: { children: React.ReactNode }) {
                     AsyncStorage.getItem('flipfox_settings'),
                     AsyncStorage.getItem('flipfox_statistics')
                 ]);
-                
+
                 const settings = settingsData ? JSON.parse(settingsData) : defaultSettings;
                 const statistics = statsData ? JSON.parse(statsData) : defaultStatistics;
-                
+
                 setState(prev => ({
                     ...prev,
                     settings,
@@ -223,8 +293,15 @@ export function GameProvider({children}: { children: React.ReactNode }) {
 
     // Save settings when they change
     const saveSettings = async (settings: Settings) => {
+        const catKey: CatKey = settings.category;
+
+        const next: Settings = {
+            ...settings,
+            mode: getFirstModeKey(catKey), // ⬅️ pick mode from the key
+        };
+
         try {
-            await AsyncStorage.setItem('flipfox_settings', JSON.stringify(settings));
+            await AsyncStorage.setItem('flipfox_settings', JSON.stringify(next));
         } catch (error) {
             console.error('Failed to save settings:', error);
         }
@@ -280,16 +357,16 @@ export function GameProvider({children}: { children: React.ReactNode }) {
                 };
                 saveStatistics(newStats);
                 return {
-                    ...s, 
-                    holding: false, 
-                    holdPct: 0, 
-                    finished: true, 
+                    ...s,
+                    holding: false,
+                    holdPct: 0,
+                    finished: true,
                     barPct: 100,
                     showingResults: true,
                     statistics: newStats
                 };
             }
-            
+
             const nextIndex = s.currentIndex + 1;
             const nextPoolIndex = s.order[nextIndex];
             const next = buildCardFor(s.pool[nextPoolIndex], s.settings.mode);
