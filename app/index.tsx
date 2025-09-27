@@ -205,34 +205,39 @@ export default function HomeScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-                {/* Hero Section */}
+                {/* Fox Hero Section */}
                 <View style={styles.hero}>
-                    <Text style={styles.heroEmoji}>🧠</Text>
+                    <View style={styles.foxContainer}>
+                        <Text style={styles.foxEmoji}>🦊</Text>
+                        <View style={styles.speechBubble}>
+                            <Text style={styles.speechText}>Let's learn together!</Text>
+                        </View>
+                    </View>
                     <Text style={styles.heroTitle}>FlipFox</Text>
-                    <Text style={styles.heroSubtitle}>Master memory through play</Text>
+                    <Text style={styles.heroSubtitle}>Your playful companion for memory training!</Text>
                 </View>
 
                 {/* Current Settings Preview */}
                 <View style={styles.previewCard}>
-                    <Text style={styles.previewTitle}>Ready to Play</Text>
+                    <Text style={styles.previewTitle}>🎯 Ready to Play</Text>
                     <View style={styles.previewDetails}>
                         <View style={styles.previewItem}>
-                            <Text style={styles.previewLabel}>Category</Text>
+                            <Text style={styles.previewLabel}>🎨 Category</Text>
                             <Text style={styles.previewValue}>{formatCategoryName(state.settings.category)}</Text>
                         </View>
                         <View style={styles.previewItem}>
-                            <Text style={styles.previewLabel}>Mode</Text>
+                            <Text style={styles.previewLabel}>🔄 Mode</Text>
                             <Text style={styles.previewValue}>
                                 {getModeOptions(state.settings.category)
                                     .find(m => m.value === state.settings.mode)?.label || "Number → Word"}
                             </Text>
                         </View>
                         <View style={styles.previewItem}>
-                            <Text style={styles.previewLabel}>Words</Text>
+                            <Text style={styles.previewLabel}>📝 Words</Text>
                             <Text style={styles.previewValue}>{state.settings.count}</Text>
                         </View>
                         <View style={styles.previewItem}>
-                            <Text style={styles.previewLabel}>Delay</Text>
+                            <Text style={styles.previewLabel}>⏱️ Delay</Text>
                             <Text style={styles.previewValue}>{state.settings.delaySec}s</Text>
                         </View>
                     </View>
@@ -240,7 +245,7 @@ export default function HomeScreen() {
 
                 {/* Main Action */}
                 <Pressable onPress={startGame} style={styles.playButton}>
-                    <Text style={styles.playButtonText}>🚀 Start Game</Text>
+                    <Text style={styles.playButtonText}>🚀 Start Learning!</Text>
                 </Pressable>
 
                 {/* Secondary Actions */}
@@ -258,7 +263,7 @@ export default function HomeScreen() {
                 {/* Quick Stats */}
                 {state.statistics.totalGames > 0 && (
                     <View style={styles.quickStats}>
-                        <Text style={styles.quickStatsTitle}>Your Progress</Text>
+                        <Text style={styles.quickStatsTitle}>🏆 Your Progress</Text>
                         <View style={styles.quickStatsRow}>
                             <View style={styles.quickStat}>
                                 <Text style={styles.quickStatValue}>{state.statistics.totalGames}</Text>
@@ -279,6 +284,11 @@ export default function HomeScreen() {
                         </View>
                     </View>
                 )}
+
+                {/* Fox Footer */}
+                <View style={styles.footer}>
+                    <Text style={styles.footerText}>Made with 🧡 by your friendly fox!</Text>
+                </View>
             </ScrollView>
         </SafeAreaView>
     );
@@ -287,7 +297,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#0f0f23",
+        backgroundColor: "#fef3e2", // Warm cream background
     },
     scrollView: {
         flex: 1,
@@ -305,18 +315,25 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: "800",
-        color: "#ffffff",
+        color: "#8b5a3c",
     },
     closeBtn: {
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: "#1e1e3f",
+        backgroundColor: "#ffffff",
         alignItems: "center",
         justifyContent: "center",
+        borderWidth: 2,
+        borderColor: "#ff8c42",
+        shadowColor: "#ff8c42",
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 3,
     },
     closeBtnText: {
-        color: "#ffffff",
+        color: "#ff8c42",
         fontSize: 18,
         fontWeight: "600",
     },
@@ -324,36 +341,67 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginBottom: 30,
     },
-    heroEmoji: {
+    foxContainer: {
+        alignItems: "center",
+        marginBottom: 15,
+        position: "relative",
+    },
+    foxEmoji: {
         fontSize: 80,
         marginBottom: 10,
+    },
+    speechBubble: {
+        backgroundColor: "#ffffff",
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        borderWidth: 2,
+        borderColor: "#ff8c42",
+        position: "relative",
+        shadowColor: "#ff8c42",
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    speechText: {
+        color: "#ff8c42",
+        fontSize: 14,
+        fontWeight: "600",
+        textAlign: "center",
     },
     heroTitle: {
         fontSize: 42,
         fontWeight: "900",
-        color: "#ffffff",
+        color: "#ff8c42",
         marginBottom: 8,
-        textShadowColor: "rgba(255, 255, 255, 0.1)",
-        textShadowOffset: {width: 0, height: 2},
+        textShadowColor: "rgba(255, 140, 66, 0.3)",
+        textShadowOffset: {width: 2, height: 2},
         textShadowRadius: 4,
     },
     heroSubtitle: {
         fontSize: 18,
-        color: "#8892b0",
+        color: "#8b5a3c",
         fontWeight: "500",
+        textAlign: "center",
     },
     previewCard: {
-        backgroundColor: "#1e1e3f",
-        borderRadius: 20,
+        backgroundColor: "#ffffff",
+        borderRadius: 24,
         padding: 20,
         marginBottom: 25,
-        borderWidth: 1,
-        borderColor: "#2a2a5a",
+        borderWidth: 3,
+        borderColor: "#ff8c42",
+        shadowColor: "#ff8c42",
+        shadowOffset: {width: 0, height: 4},
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+        elevation: 8,
     },
     previewTitle: {
         fontSize: 20,
         fontWeight: "700",
-        color: "#ffffff",
+        color: "#8b5a3c",
         marginBottom: 15,
         textAlign: "center",
     },
@@ -367,31 +415,36 @@ const styles = StyleSheet.create({
     },
     previewLabel: {
         fontSize: 16,
-        color: "#8892b0",
-        fontWeight: "500",
+        color: "#8b5a3c",
+        fontWeight: "600",
     },
     previewValue: {
         fontSize: 16,
-        color: "#ffffff",
-        fontWeight: "600",
+        color: "#ff8c42",
+        fontWeight: "700",
     },
     playButton: {
-        backgroundColor: "#64ffda",
+        backgroundColor: "#ff8c42",
         borderRadius: 25,
         paddingVertical: 18,
         paddingHorizontal: 40,
         alignItems: "center",
         marginBottom: 25,
-        shadowColor: "#64ffda",
+        shadowColor: "#ff8c42",
         shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.3,
         shadowRadius: 12,
         elevation: 8,
+        borderWidth: 3,
+        borderColor: "#ffffff",
     },
     playButtonText: {
         fontSize: 20,
         fontWeight: "800",
-        color: "#0f0f23",
+        color: "#ffffff",
+        textShadowColor: "rgba(0,0,0,0.2)",
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 2,
     },
     actionGrid: {
         flexDirection: "row",
@@ -400,12 +453,17 @@ const styles = StyleSheet.create({
     },
     actionButton: {
         flex: 1,
-        backgroundColor: "#1e1e3f",
-        borderRadius: 16,
+        backgroundColor: "#ffffff",
+        borderRadius: 20,
         padding: 20,
         alignItems: "center",
-        borderWidth: 1,
-        borderColor: "#2a2a5a",
+        borderWidth: 2,
+        borderColor: "#ffb380",
+        shadowColor: "#000",
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     actionEmoji: {
         fontSize: 32,
@@ -413,20 +471,26 @@ const styles = StyleSheet.create({
     },
     actionText: {
         fontSize: 16,
-        color: "#ffffff",
+        color: "#8b5a3c",
         fontWeight: "600",
     },
     quickStats: {
-        backgroundColor: "#1e1e3f",
-        borderRadius: 16,
+        backgroundColor: "#ffffff",
+        borderRadius: 20,
         padding: 20,
-        borderWidth: 1,
-        borderColor: "#2a2a5a",
+        borderWidth: 2,
+        borderColor: "#ffb380",
+        marginBottom: 20,
+        shadowColor: "#000",
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     quickStatsTitle: {
         fontSize: 18,
         fontWeight: "700",
-        color: "#ffffff",
+        color: "#8b5a3c",
         textAlign: "center",
         marginBottom: 15,
     },
@@ -440,22 +504,37 @@ const styles = StyleSheet.create({
     quickStatValue: {
         fontSize: 24,
         fontWeight: "800",
-        color: "#64ffda",
+        color: "#ff8c42",
         marginBottom: 4,
     },
     quickStatLabel: {
         fontSize: 14,
-        color: "#8892b0",
+        color: "#8b5a3c",
         fontWeight: "500",
+    },
+    footer: {
+        alignItems: "center",
+        marginTop: 10,
+    },
+    footerText: {
+        fontSize: 14,
+        color: "#94a3b8",
+        fontWeight: "500",
+        textAlign: "center",
     },
     // Settings & Stats styles
     statsCard: {
-        backgroundColor: "#1e1e3f",
-        borderRadius: 16,
+        backgroundColor: "#ffffff",
+        borderRadius: 20,
         padding: 20,
         marginBottom: 20,
-        borderWidth: 1,
-        borderColor: "#2a2a5a",
+        borderWidth: 2,
+        borderColor: "#ffb380",
+        shadowColor: "#000",
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     statRow: {
         flexDirection: "row",
@@ -463,36 +542,36 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: "#2a2a5a",
+        borderBottomColor: "#fef3e2",
     },
     statLabel: {
         fontSize: 16,
-        color: "#8892b0",
+        color: "#8b5a3c",
         fontWeight: "500",
     },
     statValue: {
         fontSize: 18,
-        color: "#64ffda",
+        color: "#ff8c42",
         fontWeight: "700",
     },
     sectionTitle: {
         fontSize: 20,
         fontWeight: "700",
-        color: "#ffffff",
+        color: "#8b5a3c",
         marginBottom: 15,
     },
     categoryStatCard: {
-        backgroundColor: "#1e1e3f",
-        borderRadius: 12,
+        backgroundColor: "#ffffff",
+        borderRadius: 16,
         padding: 15,
         marginBottom: 10,
-        borderWidth: 1,
-        borderColor: "#2a2a5a",
+        borderWidth: 2,
+        borderColor: "#ffb380",
     },
     categoryStatTitle: {
         fontSize: 16,
         fontWeight: "600",
-        color: "#ffffff",
+        color: "#8b5a3c",
         marginBottom: 8,
     },
     categoryStatRow: {
@@ -501,15 +580,17 @@ const styles = StyleSheet.create({
     },
     categoryStatText: {
         fontSize: 14,
-        color: "#8892b0",
+        color: "#94a3b8",
         fontWeight: "500",
     },
     resetBtn: {
         backgroundColor: "#ff6b6b",
-        borderRadius: 12,
+        borderRadius: 16,
         padding: 15,
         alignItems: "center",
         marginTop: 20,
+        borderWidth: 2,
+        borderColor: "#ffffff",
     },
     resetBtnText: {
         fontSize: 16,
@@ -520,25 +601,32 @@ const styles = StyleSheet.create({
         gap: 25,
     },
     settingGroup: {
-        backgroundColor: "#1e1e3f",
-        borderRadius: 16,
+        backgroundColor: "#ffffff",
+        borderRadius: 20,
         padding: 20,
-        borderWidth: 1,
-        borderColor: "#2a2a5a",
+        borderWidth: 2,
+        borderColor: "#ffb380",
+        shadowColor: "#000",
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     settingLabel: {
         fontSize: 18,
-        fontWeight: "600",
-        color: "#ffffff",
+        fontWeight: "700",
+        color: "#8b5a3c",
         marginBottom: 15,
     },
     pickerContainer: {
-        backgroundColor: "#2a2a5a",
-        borderRadius: 12,
+        backgroundColor: "#fef3e2",
+        borderRadius: 16,
         overflow: "hidden",
+        borderWidth: 2,
+        borderColor: "#ffb380",
     },
     picker: {
-        color: "#ffffff",
+        color: "#8b5a3c",
         backgroundColor: "transparent",
     },
     numberButtons: {
@@ -547,22 +635,25 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
     },
     numberBtn: {
-        backgroundColor: "#2a2a5a",
-        borderRadius: 12,
+        backgroundColor: "#fef3e2",
+        borderRadius: 16,
         paddingVertical: 12,
         paddingHorizontal: 20,
         minWidth: 50,
         alignItems: "center",
+        borderWidth: 2,
+        borderColor: "#ffb380",
     },
     numberBtnActive: {
-        backgroundColor: "#64ffda",
+        backgroundColor: "#ff8c42",
+        borderColor: "#ff8c42",
     },
     numberBtnText: {
         fontSize: 16,
         fontWeight: "600",
-        color: "#ffffff",
+        color: "#8b5a3c",
     },
     numberBtnTextActive: {
-        color: "#0f0f23",
+        color: "#ffffff",
     },
 });

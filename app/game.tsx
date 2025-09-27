@@ -23,10 +23,19 @@ export default function GameScreen() {
     const progress = ((state.currentIndex + 1) / state.order.length) * 100;
     const isHoldPhase = state.holding;
 
+    // Fox expressions based on game state
+    const getFoxExpression = () => {
+        if (state.paused) return "😴"; // Sleeping fox
+        if (isHoldPhase && state.lastChoice?.good) return "😊"; // Happy fox
+        if (isHoldPhase && !state.lastChoice?.good) return "🤔"; // Thinking fox
+        return "🦊"; // Default fox
+    };
+
     return (
         <SafeAreaView style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
+            {/* Fox Header */}
+            <View style={styles.foxHeader}>
+                <Text style={styles.foxEmoji}>{getFoxExpression()}</Text>
                 <View style={styles.progressContainer}>
                     <Text style={styles.progressText}>
                         {state.currentIndex + 1} / {state.order.length}
@@ -135,22 +144,22 @@ export default function GameScreen() {
             {state.paused && (
                 <View style={styles.pauseOverlay}>
                     <View style={styles.pausePanel}>
-                        <Text style={styles.pauseEmoji}>⏸️</Text>
+                        <Text style={styles.pauseEmoji}>😴</Text>
                         <Text style={styles.pauseTitle}>Game Paused</Text>
-                        <Text style={styles.pauseSubtitle}>Take your time</Text>
+                        <Text style={styles.pauseSubtitle}>Take your time, little fox!</Text>
                         
                         <View style={styles.pauseActions}>
                             <Pressable
                                 onPress={() => actions.togglePause()}
                                 style={[styles.pauseActionBtn, styles.resumeBtn]}
                             >
-                                <Text style={styles.pauseActionText}>Resume</Text>
+                                <Text style={styles.pauseActionText}>▶️ Resume</Text>
                             </Pressable>
                             <Pressable
                                 onPress={actions.endGame}
                                 style={[styles.pauseActionBtn, styles.endBtn]}
                             >
-                                <Text style={[styles.pauseActionText, styles.endActionText]}>End Game</Text>
+                                <Text style={[styles.pauseActionText, styles.endActionText]}>🏁 End Game</Text>
                             </Pressable>
                         </View>
                     </View>
@@ -163,49 +172,62 @@ export default function GameScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#0f0f23",
+        backgroundColor: "#fef3e2", // Warm cream background
     },
-    header: {
-        flexDirection: "row",
+    foxHeader: {
         alignItems: "center",
-        justifyContent: "space-between",
         padding: 20,
         paddingBottom: 10,
     },
+    foxEmoji: {
+        fontSize: 48,
+        marginBottom: 10,
+    },
     progressContainer: {
-        flex: 1,
-        marginRight: 15,
+        width: "100%",
+        alignItems: "center",
+        marginBottom: 15,
     },
     progressText: {
         fontSize: 16,
-        fontWeight: "600",
-        color: "#8892b0",
+        fontWeight: "700",
+        color: "#8b5a3c",
         marginBottom: 8,
         textAlign: "center",
     },
     progressBar: {
-        height: 6,
-        backgroundColor: "#1e1e3f",
-        borderRadius: 3,
+        width: "80%",
+        height: 8,
+        backgroundColor: "#ffb380",
+        borderRadius: 4,
         overflow: "hidden",
     },
     progressFill: {
         height: "100%",
-        backgroundColor: "#64ffda",
-        borderRadius: 3,
+        backgroundColor: "#ff8c42",
+        borderRadius: 4,
     },
     pauseBtn: {
+        position: "absolute",
+        right: 20,
+        top: 20,
         width: 50,
         height: 50,
         borderRadius: 25,
-        backgroundColor: "#1e1e3f",
+        backgroundColor: "#ffffff",
         alignItems: "center",
         justifyContent: "center",
-        borderWidth: 1,
-        borderColor: "#2a2a5a",
+        borderWidth: 2,
+        borderColor: "#ffb380",
+        shadowColor: "#000",
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     pauseBtnActive: {
-        backgroundColor: "#64ffda",
+        backgroundColor: "#ff8c42",
+        borderColor: "#ff8c42",
     },
     pauseBtnText: {
         fontSize: 20,
@@ -217,7 +239,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     card: {
-        backgroundColor: "#1e1e3f",
+        backgroundColor: "#ffffff",
         borderRadius: 24,
         padding: 40,
         alignItems: "center",
@@ -225,41 +247,41 @@ const styles = StyleSheet.create({
         minHeight: 300,
         width: "100%",
         maxWidth: 400,
-        borderWidth: 2,
-        borderColor: "#2a2a5a",
-        shadowColor: "#000",
+        borderWidth: 3,
+        borderColor: "#ff8c42",
+        shadowColor: "#ff8c42",
         shadowOffset: {width: 0, height: 8},
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.2,
         shadowRadius: 16,
         elevation: 12,
     },
     prompt: {
-        color: "#ffffff",
+        color: "#8b5a3c",
         fontWeight: "900",
         textAlign: "center",
         marginBottom: 20,
-        textShadowColor: "rgba(255, 255, 255, 0.1)",
+        textShadowColor: "rgba(139, 90, 60, 0.1)",
         textShadowOffset: {width: 0, height: 2},
         textShadowRadius: 4,
     },
     answer: {
-        color: "#64ffda",
+        color: "#ff8c42",
         fontWeight: "700",
         textAlign: "center",
         marginBottom: 20,
     },
     timerContainer: {
         width: "100%",
-        height: 4,
-        backgroundColor: "#2a2a5a",
-        borderRadius: 2,
+        height: 6,
+        backgroundColor: "#fef3e2",
+        borderRadius: 3,
         overflow: "hidden",
         marginTop: 20,
     },
     timerBar: {
         height: "100%",
-        backgroundColor: "#64ffda",
-        borderRadius: 2,
+        backgroundColor: "#ff8c42",
+        borderRadius: 3,
     },
     holdIndicator: {
         marginTop: 20,
@@ -270,20 +292,20 @@ const styles = StyleSheet.create({
     holdProgress: {
         width: "100%",
         height: 8,
-        backgroundColor: "#1e1e3f",
+        backgroundColor: "#ffb380",
         borderRadius: 4,
         overflow: "hidden",
         marginBottom: 10,
     },
     holdFill: {
         height: "100%",
-        backgroundColor: "#ff6b6b",
+        backgroundColor: "#ff8c42",
         borderRadius: 4,
     },
     holdText: {
         fontSize: 18,
         fontWeight: "600",
-        color: "#ffffff",
+        color: "#8b5a3c",
     },
     actionArea: {
         paddingHorizontal: 20,
@@ -306,41 +328,53 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         minWidth: 140,
-        borderWidth: 2,
+        borderWidth: 3,
+        shadowColor: "#000",
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 4,
     },
     correctBtn: {
         backgroundColor: "#4ade80",
-        borderColor: "#22c55e",
+        borderColor: "#ffffff",
     },
     wrongBtn: {
         backgroundColor: "#f87171",
-        borderColor: "#ef4444",
+        borderColor: "#ffffff",
     },
     changeBtn: {
-        backgroundColor: "#1e1e3f",
+        backgroundColor: "#ffffff",
         borderColor: "#f87171",
-        color: "#f87171",
     },
     continueBtn: {
-        backgroundColor: "#64ffda",
-        borderColor: "#4fd1c7",
+        backgroundColor: "#ff8c42",
+        borderColor: "#ffffff",
     },
     actionBtnText: {
         fontSize: 16,
         fontWeight: "700",
-        color: "#0f0f23",
+        color: "#ffffff",
+        textShadowColor: "rgba(0,0,0,0.2)",
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 2,
     },
     changeBtnText: {
         color: "#f87171",
+        textShadowColor: "transparent",
     },
     scoreArea: {
         flexDirection: "row",
         justifyContent: "space-around",
         paddingHorizontal: 20,
         paddingBottom: 20,
-        borderTopWidth: 1,
-        borderTopColor: "#1e1e3f",
+        borderTopWidth: 2,
+        borderTopColor: "#ffb380",
         paddingTop: 15,
+        backgroundColor: "#ffffff",
+        marginHorizontal: 20,
+        borderRadius: 20,
+        marginBottom: 10,
     },
     scoreItem: {
         alignItems: "center",
@@ -348,12 +382,12 @@ const styles = StyleSheet.create({
     scoreValue: {
         fontSize: 24,
         fontWeight: "800",
-        color: "#64ffda",
+        color: "#ff8c42",
         marginBottom: 4,
     },
     scoreLabel: {
         fontSize: 12,
-        color: "#8892b0",
+        color: "#8b5a3c",
         fontWeight: "500",
         textTransform: "uppercase",
         letterSpacing: 1,
@@ -364,21 +398,21 @@ const styles = StyleSheet.create({
         right: 0,
         top: 0,
         bottom: 0,
-        backgroundColor: "rgba(15, 15, 35, 0.95)",
+        backgroundColor: "rgba(254, 243, 226, 0.95)",
         alignItems: "center",
         justifyContent: "center",
     },
     pausePanel: {
-        backgroundColor: "#1e1e3f",
+        backgroundColor: "#ffffff",
         borderRadius: 24,
         padding: 30,
         alignItems: "center",
         minWidth: 280,
-        borderWidth: 2,
-        borderColor: "#2a2a5a",
-        shadowColor: "#000",
+        borderWidth: 3,
+        borderColor: "#ff8c42",
+        shadowColor: "#ff8c42",
         shadowOffset: {width: 0, height: 8},
-        shadowOpacity: 0.4,
+        shadowOpacity: 0.3,
         shadowRadius: 20,
         elevation: 16,
     },
@@ -389,12 +423,12 @@ const styles = StyleSheet.create({
     pauseTitle: {
         fontSize: 24,
         fontWeight: "800",
-        color: "#ffffff",
+        color: "#8b5a3c",
         marginBottom: 8,
     },
     pauseSubtitle: {
         fontSize: 16,
-        color: "#8892b0",
+        color: "#94a3b8",
         marginBottom: 25,
         textAlign: "center",
     },
@@ -403,26 +437,30 @@ const styles = StyleSheet.create({
         width: "100%",
     },
     pauseActionBtn: {
-        borderRadius: 16,
+        borderRadius: 20,
         paddingVertical: 14,
         paddingHorizontal: 20,
         alignItems: "center",
-        borderWidth: 2,
+        borderWidth: 3,
     },
     resumeBtn: {
-        backgroundColor: "#64ffda",
-        borderColor: "#4fd1c7",
+        backgroundColor: "#ff8c42",
+        borderColor: "#ffffff",
     },
     endBtn: {
-        backgroundColor: "#1e1e3f",
+        backgroundColor: "#ffffff",
         borderColor: "#f87171",
     },
     pauseActionText: {
         fontSize: 16,
         fontWeight: "700",
-        color: "#0f0f23",
+        color: "#ffffff",
+        textShadowColor: "rgba(0,0,0,0.2)",
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 2,
     },
     endActionText: {
         color: "#f87171",
+        textShadowColor: "transparent",
     },
 });

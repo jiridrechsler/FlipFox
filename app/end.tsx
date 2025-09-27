@@ -22,42 +22,47 @@ export default function EndScreen() {
         if (accuracy >= 90) {
             return {
                 emoji: "🏆",
+                foxEmoji: "🦊✨",
                 title: "Outstanding!",
-                message: "You're a memory master!",
+                message: "You're a memory master, little fox!",
                 color: "#ffd700",
-                bgColor: "#1a1a00"
+                bgColor: "#fff9e6"
             };
         } else if (accuracy >= 75) {
             return {
                 emoji: "🌟",
+                foxEmoji: "🦊😊",
                 title: "Excellent!",
                 message: "Great memory skills!",
-                color: "#64ffda",
-                bgColor: "#0a1a1a"
+                color: "#ff8c42",
+                bgColor: "#fef3e2"
             };
         } else if (accuracy >= 60) {
             return {
                 emoji: "👍",
+                foxEmoji: "🦊👍",
                 title: "Good Job!",
                 message: "You're improving!",
                 color: "#4ade80",
-                bgColor: "#0a1a0a"
+                bgColor: "#f0fdf4"
             };
         } else if (accuracy >= 40) {
             return {
                 emoji: "💪",
+                foxEmoji: "🦊💪",
                 title: "Keep Going!",
                 message: "Practice makes perfect!",
                 color: "#f59e0b",
-                bgColor: "#1a1500"
+                bgColor: "#fffbeb"
             };
         } else {
             return {
                 emoji: "🎯",
+                foxEmoji: "🦊🎯",
                 title: "Try Again!",
                 message: "Every expert was once a beginner!",
                 color: "#f87171",
-                bgColor: "#1a0a0a"
+                bgColor: "#fef2f2"
             };
         }
     };
@@ -68,9 +73,9 @@ export default function EndScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-                {/* Performance Header */}
+                {/* Fox Celebration Header */}
                 <View style={[styles.performanceHeader, {backgroundColor: performance.bgColor}]}>
-                    <Text style={styles.performanceEmoji}>{performance.emoji}</Text>
+                    <Text style={styles.foxCelebration}>{performance.foxEmoji}</Text>
                     <Text style={[styles.performanceTitle, {color: performance.color}]}>
                         {performance.title}
                     </Text>
@@ -95,32 +100,49 @@ export default function EndScreen() {
                 {/* Detailed Stats */}
                 <View style={styles.detailedStats}>
                     <View style={styles.statCard}>
+                        <Text style={styles.statEmoji}>👀</Text>
                         <Text style={styles.statValue}>{state.seen}</Text>
                         <Text style={styles.statLabel}>Words Seen</Text>
                     </View>
                     <View style={styles.statCard}>
+                        <Text style={styles.statEmoji}>✅</Text>
                         <Text style={styles.statValue}>{state.correct}</Text>
                         <Text style={styles.statLabel}>Correct</Text>
                     </View>
                     <View style={styles.statCard}>
+                        <Text style={styles.statEmoji}>❌</Text>
                         <Text style={styles.statValue}>{state.seen - state.correct}</Text>
                         <Text style={styles.statLabel}>Missed</Text>
                     </View>
                 </View>
 
+                {/* Progress Visualization */}
+                <View style={styles.progressSection}>
+                    <Text style={styles.progressTitle}>Your Progress</Text>
+                    <View style={styles.progressBarContainer}>
+                        <View style={[styles.progressBarFill, {
+                            width: `${state.accuracy}%`,
+                            backgroundColor: performance.color
+                        }]} />
+                    </View>
+                    <Text style={styles.progressText}>
+                        {state.correct} out of {state.seen} correct
+                    </Text>
+                </View>
+
                 {/* Action Buttons */}
                 <View style={styles.actionButtons}>
                     <Pressable onPress={playAgain} style={[styles.actionBtn, styles.playAgainBtn]}>
-                        <Text style={[styles.actionBtnText, styles.playAgainBtnText]}>Play Again</Text>
+                        <Text style={styles.actionBtnText}>🔄 Play Again</Text>
                     </Pressable>
                     <Pressable onPress={goHome} style={[styles.actionBtn, styles.homeBtn]}>
-                        <Text style={[styles.actionBtnText, styles.homeBtnText]}>Home</Text>
+                        <Text style={[styles.actionBtnText, styles.homeBtnText]}>🏠 Home</Text>
                     </Pressable>
                 </View>
 
                 {/* Overall Stats Preview */}
                 <View style={styles.overallStats}>
-                    <Text style={styles.overallStatsTitle}>Overall Progress</Text>
+                    <Text style={styles.overallStatsTitle}>🏆 Overall Progress</Text>
                     <View style={styles.overallStatsGrid}>
                         <View style={styles.overallStatItem}>
                             <Text style={styles.overallStatValue}>{state.statistics.totalGames}</Text>
@@ -140,6 +162,11 @@ export default function EndScreen() {
                         </View>
                     </View>
                 </View>
+
+                {/* Fox Footer */}
+                <View style={styles.footer}>
+                    <Text style={styles.footerText}>🦊 Keep learning with your fox friend! 🧡</Text>
+                </View>
             </ScrollView>
         </SafeAreaView>
     );
@@ -148,7 +175,7 @@ export default function EndScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#0f0f23",
+        backgroundColor: "#fef3e2", // Warm cream background
     },
     scrollView: {
         flex: 1,
@@ -158,14 +185,19 @@ const styles = StyleSheet.create({
         paddingBottom: 40,
     },
     performanceHeader: {
-        borderRadius: 20,
+        borderRadius: 24,
         padding: 25,
         alignItems: "center",
         marginBottom: 25,
-        borderWidth: 1,
-        borderColor: "#2a2a5a",
+        borderWidth: 3,
+        borderColor: "#ff8c42",
+        shadowColor: "#ff8c42",
+        shadowOffset: {width: 0, height: 4},
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+        elevation: 8,
     },
-    performanceEmoji: {
+    foxCelebration: {
         fontSize: 60,
         marginBottom: 10,
     },
@@ -173,13 +205,13 @@ const styles = StyleSheet.create({
         fontSize: 32,
         fontWeight: "900",
         marginBottom: 8,
-        textShadowColor: "rgba(0, 0, 0, 0.3)",
+        textShadowColor: "rgba(0, 0, 0, 0.1)",
         textShadowOffset: {width: 0, height: 2},
         textShadowRadius: 4,
     },
     performanceMessage: {
         fontSize: 18,
-        color: "#8892b0",
+        color: "#8b5a3c",
         fontWeight: "500",
         textAlign: "center",
     },
@@ -189,11 +221,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 8,
         marginTop: 15,
+        borderWidth: 2,
+        borderColor: "#ffffff",
     },
     newBestText: {
         fontSize: 16,
         fontWeight: "700",
-        color: "#0f0f23",
+        color: "#8b5a3c",
     },
     mainStats: {
         alignItems: "center",
@@ -206,7 +240,12 @@ const styles = StyleSheet.create({
         borderWidth: 4,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#1e1e3f",
+        backgroundColor: "#ffffff",
+        shadowColor: "#000",
+        shadowOffset: {width: 0, height: 4},
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 6,
     },
     accuracyNumber: {
         fontSize: 36,
@@ -215,7 +254,7 @@ const styles = StyleSheet.create({
     },
     accuracyLabel: {
         fontSize: 14,
-        color: "#8892b0",
+        color: "#8b5a3c",
         fontWeight: "600",
         textTransform: "uppercase",
         letterSpacing: 1,
@@ -227,13 +266,18 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     statCard: {
-        backgroundColor: "#1e1e3f",
-        borderRadius: 16,
+        backgroundColor: "#ffffff",
+        borderRadius: 20,
         padding: 16,
         alignItems: "center",
         flex: 1,
-        borderWidth: 1,
-        borderColor: "#2a2a5a",
+        borderWidth: 2,
+        borderColor: "#ffb380",
+        shadowColor: "#000",
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     statEmoji: {
         fontSize: 24,
@@ -242,124 +286,109 @@ const styles = StyleSheet.create({
     statValue: {
         fontSize: 24,
         fontWeight: "800",
-        color: "#ffffff",
+        color: "#ff8c42",
         marginBottom: 4,
     },
     statLabel: {
         fontSize: 12,
-        color: "#8892b0",
+        color: "#8b5a3c",
         fontWeight: "500",
         textAlign: "center",
         textTransform: "uppercase",
         letterSpacing: 0.5,
     },
     progressSection: {
-        backgroundColor: "#1e1e3f",
-        borderRadius: 16,
+        backgroundColor: "#ffffff",
+        borderRadius: 20,
         padding: 20,
         marginBottom: 25,
-        borderWidth: 1,
-        borderColor: "#2a2a5a",
+        borderWidth: 2,
+        borderColor: "#ffb380",
+        shadowColor: "#000",
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     progressTitle: {
         fontSize: 18,
         fontWeight: "700",
-        color: "#ffffff",
+        color: "#8b5a3c",
         textAlign: "center",
         marginBottom: 15,
     },
     progressBarContainer: {
         height: 12,
-        backgroundColor: "#2a2a5a",
+        backgroundColor: "#fef3e2",
         borderRadius: 6,
         overflow: "hidden",
         marginBottom: 10,
+        borderWidth: 2,
+        borderColor: "#ffb380",
     },
     progressBarFill: {
         height: "100%",
-        borderRadius: 6,
+        borderRadius: 4,
     },
     progressText: {
         fontSize: 14,
-        color: "#8892b0",
+        color: "#8b5a3c",
         textAlign: "center",
         fontWeight: "500",
-    },
-    gameInfo: {
-        backgroundColor: "#1e1e3f",
-        borderRadius: 16,
-        padding: 20,
-        marginBottom: 25,
-        borderWidth: 1,
-        borderColor: "#2a2a5a",
-    },
-    gameInfoTitle: {
-        fontSize: 18,
-        fontWeight: "700",
-        color: "#ffffff",
-        textAlign: "center",
-        marginBottom: 15,
-    },
-    gameInfoGrid: {
-        gap: 12,
-    },
-    gameInfoItem: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingVertical: 8,
-    },
-    gameInfoLabel: {
-        fontSize: 16,
-        color: "#8892b0",
-        fontWeight: "500",
-    },
-    gameInfoValue: {
-        fontSize: 16,
-        color: "#ffffff",
-        fontWeight: "600",
     },
     actionButtons: {
         gap: 15,
         marginBottom: 25,
     },
     actionBtn: {
-        borderRadius: 20,
+        borderRadius: 25,
         paddingVertical: 16,
         paddingHorizontal: 24,
         alignItems: "center",
-        borderWidth: 2,
+        borderWidth: 3,
+        shadowColor: "#000",
+        shadowOffset: {width: 0, height: 4},
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 6,
     },
     playAgainBtn: {
-        backgroundColor: "#64ffda",
-        borderColor: "#4fd1c7",
+        backgroundColor: "#ff8c42",
+        borderColor: "#ffffff",
     },
     homeBtn: {
-        backgroundColor: "#1e1e3f",
-        borderColor: "#64ffda",
-        color: "#64ffda",
+        backgroundColor: "#ffffff",
+        borderColor: "#ff8c42",
     },
     actionBtnText: {
         fontSize: 18,
         fontWeight: "700",
+        color: "#ffffff",
+        textShadowColor: "rgba(0,0,0,0.2)",
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 2,
     },
     homeBtnText: {
-        color: "#64ffda",
-    },
-    playAgainBtnText: {
-        color: "#0f0f23",
+        color: "#ff8c42",
+        textShadowColor: "transparent",
     },
     overallStats: {
-        backgroundColor: "#1e1e3f",
-        borderRadius: 16,
+        backgroundColor: "#ffffff",
+        borderRadius: 20,
         padding: 20,
-        borderWidth: 1,
-        borderColor: "#2a2a5a",
+        borderWidth: 2,
+        borderColor: "#ffb380",
+        marginBottom: 20,
+        shadowColor: "#000",
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     overallStatsTitle: {
         fontSize: 18,
         fontWeight: "700",
-        color: "#ffffff",
+        color: "#8b5a3c",
         textAlign: "center",
         marginBottom: 15,
     },
@@ -373,15 +402,25 @@ const styles = StyleSheet.create({
     overallStatValue: {
         fontSize: 20,
         fontWeight: "800",
-        color: "#64ffda",
+        color: "#ff8c42",
         marginBottom: 4,
     },
     overallStatLabel: {
         fontSize: 12,
-        color: "#8892b0",
+        color: "#8b5a3c",
         fontWeight: "500",
         textAlign: "center",
         textTransform: "uppercase",
         letterSpacing: 0.5,
+    },
+    footer: {
+        alignItems: "center",
+        marginTop: 10,
+    },
+    footerText: {
+        fontSize: 14,
+        color: "#94a3b8",
+        fontWeight: "500",
+        textAlign: "center",
     },
 });
