@@ -209,9 +209,6 @@ export default function HomeScreen() {
                 <View style={styles.hero}>
                     <View style={styles.foxContainer}>
                         <Text style={styles.foxEmoji}>🦊</Text>
-                        <View style={styles.speechBubble}>
-                            <Text style={styles.speechText}>Let's learn together!</Text>
-                        </View>
                     </View>
                     <Text style={styles.heroTitle}>FlipFox</Text>
                     <Text style={styles.heroSubtitle}>Your playful companion for memory training!</Text>
@@ -235,10 +232,6 @@ export default function HomeScreen() {
                         <View style={styles.previewItem}>
                             <Text style={styles.previewLabel}>📝 Words</Text>
                             <Text style={styles.previewValue}>{state.settings.count}</Text>
-                        </View>
-                        <View style={styles.previewItem}>
-                            <Text style={styles.previewLabel}>⏱️ Delay</Text>
-                            <Text style={styles.previewValue}>{state.settings.delaySec}s</Text>
                         </View>
                     </View>
                 </View>
@@ -284,11 +277,6 @@ export default function HomeScreen() {
                         </View>
                     </View>
                 )}
-
-                {/* Fox Footer */}
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>Made with 🧡 by your friendly fox!</Text>
-                </View>
             </ScrollView>
         </SafeAreaView>
     );
@@ -349,26 +337,6 @@ const styles = StyleSheet.create({
     foxEmoji: {
         fontSize: 80,
         marginBottom: 10,
-    },
-    speechBubble: {
-        backgroundColor: "#ffffff",
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
-        borderWidth: 2,
-        borderColor: "#ff8c42",
-        position: "relative",
-        shadowColor: "#ff8c42",
-        shadowOffset: {width: 0, height: 2},
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    speechText: {
-        color: "#ff8c42",
-        fontSize: 14,
-        fontWeight: "600",
-        textAlign: "center",
     },
     heroTitle: {
         fontSize: 42,
@@ -511,16 +479,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: "#8b5a3c",
         fontWeight: "500",
-    },
-    footer: {
-        alignItems: "center",
-        marginTop: 10,
-    },
-    footerText: {
-        fontSize: 14,
-        color: "#94a3b8",
-        fontWeight: "500",
-        textAlign: "center",
     },
     // Settings & Stats styles
     statsCard: {

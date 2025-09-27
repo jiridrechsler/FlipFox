@@ -22,7 +22,7 @@ export default function EndScreen() {
         if (accuracy >= 90) {
             return {
                 emoji: "🏆",
-                foxEmoji: "🦊✨",
+                foxEmoji: "✨",
                 title: "Outstanding!",
                 message: "You're a memory master, little fox!",
                 color: "#ffd700",
@@ -31,7 +31,7 @@ export default function EndScreen() {
         } else if (accuracy >= 75) {
             return {
                 emoji: "🌟",
-                foxEmoji: "🦊😊",
+                foxEmoji: "😊",
                 title: "Excellent!",
                 message: "Great memory skills!",
                 color: "#ff8c42",
@@ -40,7 +40,7 @@ export default function EndScreen() {
         } else if (accuracy >= 60) {
             return {
                 emoji: "👍",
-                foxEmoji: "🦊👍",
+                foxEmoji: "👍",
                 title: "Good Job!",
                 message: "You're improving!",
                 color: "#4ade80",
@@ -49,7 +49,7 @@ export default function EndScreen() {
         } else if (accuracy >= 40) {
             return {
                 emoji: "💪",
-                foxEmoji: "🦊💪",
+                foxEmoji: "💪",
                 title: "Keep Going!",
                 message: "Practice makes perfect!",
                 color: "#f59e0b",
@@ -58,7 +58,7 @@ export default function EndScreen() {
         } else {
             return {
                 emoji: "🎯",
-                foxEmoji: "🦊🎯",
+                foxEmoji: "🎯",
                 title: "Try Again!",
                 message: "Every expert was once a beginner!",
                 color: "#f87171",
@@ -100,17 +100,14 @@ export default function EndScreen() {
                 {/* Detailed Stats */}
                 <View style={styles.detailedStats}>
                     <View style={styles.statCard}>
-                        <Text style={styles.statEmoji}>👀</Text>
                         <Text style={styles.statValue}>{state.seen}</Text>
                         <Text style={styles.statLabel}>Words Seen</Text>
                     </View>
                     <View style={styles.statCard}>
-                        <Text style={styles.statEmoji}>✅</Text>
                         <Text style={styles.statValue}>{state.correct}</Text>
                         <Text style={styles.statLabel}>Correct</Text>
                     </View>
                     <View style={styles.statCard}>
-                        <Text style={styles.statEmoji}>❌</Text>
                         <Text style={styles.statValue}>{state.seen - state.correct}</Text>
                         <Text style={styles.statLabel}>Missed</Text>
                     </View>
@@ -161,11 +158,6 @@ export default function EndScreen() {
                             <Text style={styles.overallStatLabel}>Average</Text>
                         </View>
                     </View>
-                </View>
-
-                {/* Fox Footer */}
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>🦊 Keep learning with your fox friend! 🧡</Text>
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -278,10 +270,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
-    },
-    statEmoji: {
-        fontSize: 24,
-        marginBottom: 8,
     },
     statValue: {
         fontSize: 24,
@@ -412,15 +400,5 @@ const styles = StyleSheet.create({
         textAlign: "center",
         textTransform: "uppercase",
         letterSpacing: 0.5,
-    },
-    footer: {
-        alignItems: "center",
-        marginTop: 10,
-    },
-    footerText: {
-        fontSize: 14,
-        color: "#94a3b8",
-        fontWeight: "500",
-        textAlign: "center",
     },
 });
