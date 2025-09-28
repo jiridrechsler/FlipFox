@@ -1,50 +1,42 @@
-# Welcome to your Expo app 👋
+# 🦊 FlipFox 
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**FlipFox** is a playful flashcard game for learning English.  
+It uses two deck types:
 
-## Get started
+- 🔢 **Number → Word** (e.g., days of the week, months)
+- 🎨 **Image → Word** (e.g., colors, food, transportation)
 
-1. Install dependencies
+You choose the **category** and **direction** (prompt → answer or reverse), set the **auto-reveal speed**, the **round length (number of cards)**, and start learning.  
+FlipFox tracks your ✅ correct / ❌ incorrect answers, supports **pause**, and shows **results** at the end.  
+A friendly **fox mascot 🦊** keeps the vibe fun for all ages.
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## 🚀 Getting Started
 
-   ```bash
-   npx expo start
-   ```
+### Prerequisites
 
-In the output, you'll find options to open the app in a
+- 🖥️ **Node.js** 18+ and **npm**, **yarn**, or **pnpm**
+- 📱 **Expo CLI** (comes via `npx`, no global install required)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Install & Run (Development)
 
 ```bash
-npm run reset-project
+# 1. Install dependencies
+npm install
+# or
+yarn
+# or
+pnpm install
+
+# 2. Start the Expo dev server
+npx expo start
+
+# 3. Build for web
+npx expo export -p web
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Try it out 
+https://flipfox.jiridrechsler.cz/
