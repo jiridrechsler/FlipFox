@@ -8,7 +8,6 @@ It uses two deck types:
 
 You choose the **category** and **direction** (prompt → answer or reverse), set the **auto-reveal speed**, the **round length (number of cards)**, and start learning.  
 FlipFox tracks your ✅ correct / ❌ incorrect answers, supports **pause**, and shows **results** at the end.  
-A friendly **fox mascot 🦊** keeps the vibe fun for all ages.
 
 ---
 
